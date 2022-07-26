@@ -1,25 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
+import { ThemeProvider } from '@emotion/react';
+import { CssBaseline, TextareaAutosize } from '@mui/material';
+import createTheme from '@mui/material/styles/createTheme';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
+import Dashboard from './dashboard/Dashboard';
+import Login from './Login';
 
-function App() {
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
+function isLoggedIn(): boolean {
+  if (localStorage.getItem('jwt')) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function App(): JSX.Element {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <div className="App">
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={isLoggedIn() ? <Navigate to="dashboard" /> : <Navigate to="login" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </ThemeProvider>
   );
 }
 
