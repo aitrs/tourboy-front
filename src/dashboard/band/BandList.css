@@ -1,0 +1,15 @@
+.band-selector {
+    min-width: calc(20vw);
+    margin-left: 10px;
+    margin-right: 10px;
+    text-align: left;
+    flex: 1;
+}
+
+.bandlistbuttons {
+    display: flex;
+}
+
+.bandlistbuttonitem {
+    flex: 1;
+}

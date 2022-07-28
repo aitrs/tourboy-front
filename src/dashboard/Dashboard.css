@@ -1,0 +1,16 @@
+.topband {
+    display: flex;
+    justify-content: space-between;
+}
+
+.topbandchips {
+    flex: 4;
+}
+
+.memberlistitem {
+    width: auto !important;
+    text-overflow: ellipsis;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    
+}

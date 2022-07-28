@@ -1,5 +1,4 @@
-import { Claims } from "../types/userapi";
-
+import { Band, Claims } from "../types/userapi";
 export default class BaseService {
     protected _claims?: Claims;
     protected static readonly _secret = "kahloriz";
@@ -8,7 +7,8 @@ export default class BaseService {
         let headers = new Headers();
         const jwt = localStorage.getItem('jwt');
         if (jwt) {
-            //this._claims = JSON.parse(Jwt.verify(jwt, BaseService._secret) as string);
+            const decode = require('jwt-claims');
+            this._claims = decode(jwt);
             headers.append('Authorization', `Bearer ${jwt}`);
         }
         headers.append('Content-Type', 'application/json');
@@ -24,7 +24,29 @@ export default class BaseService {
         return localStorage.getItem('jwt');
     }
 
+    static get isJwtExpired(): boolean {
+        const jwt = localStorage.getItem('jwt');
+
+        if (jwt) {
+            const decode = require('jwt-claims');
+            const claims: Claims = decode(jwt);
+            const now = Date.now() / 1000;
+
+            return claims.exp < now;
+        } else {
+            return false;
+        }
+    }
+
     static removeJwt() {
         localStorage.removeItem('jwt');
+    }
+
+    get userId(): number | undefined {
+        return this._claims ? this._claims.id_user : undefined;
+    }
+
+    get bands(): Array<Band> {
+        return this._claims ? this._claims.bands : [];
     }
 }

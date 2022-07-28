@@ -1,0 +1,9 @@
+.dialogcard {
+    text-align: center;
+}
+
+.dialogactions {
+    display: flex !important;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
