@@ -4,7 +4,7 @@ import UserService from '../services/UserService';
 import BandList from "./band/BandList";
 import { Band, User } from "../types/userapi";
 import BaseService from "../services/BaseService";
-import { Chip, ListItem, Paper } from "@mui/material";
+import { Chip, Drawer, ListItem, Paper } from "@mui/material";
 import './Dashboard.css';
 import { KickDialog } from "./band/KickDialog";
 
@@ -171,6 +171,14 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
                             userToKick={this.state.userToKick as User}
                         />
                     </div>
+                    <Drawer
+                        variant="temporary"
+                        ModalProps={{
+                            keepMounted: true,
+                        }}
+                    >
+                        azzzzzz
+                    </Drawer>
                 </div> 
             );
         } else {

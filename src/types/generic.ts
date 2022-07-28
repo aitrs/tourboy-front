@@ -3,3 +3,11 @@ export interface FormValue<T> {
     error: boolean,
     errorMessage: string,
 }
+
+export interface Filter {
+    key: string,
+    alias?: string,
+    op: 'like' | 'exact',
+    filterType: 'numeric' | 'string',
+    value: 'string',
+}
