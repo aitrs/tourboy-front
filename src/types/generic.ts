@@ -9,5 +9,12 @@ export interface Filter {
     alias?: string,
     op: 'like' | 'exact',
     filterType: 'numeric' | 'string',
-    value: 'string',
+    value: string,
+}
+
+export interface Paginator {
+    page: number,
+    size: number,
+    pageCount?: number,
+    itemCount?: number,
 }

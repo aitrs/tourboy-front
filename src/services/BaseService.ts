@@ -1,3 +1,4 @@
+import { Filter } from "../types/generic";
 import { Band, Claims } from "../types/userapi";
 export default class BaseService {
     protected _claims?: Claims;
@@ -14,6 +15,12 @@ export default class BaseService {
         headers.append('Content-Type', 'application/json');
         
         return headers
+    }
+
+    protected _genHeaders(filters: Array<Filter>): Headers {
+        let headers = this._headers;
+        headers.append('filters', JSON.stringify(filters));
+        return headers;
     }
 
     static set jwt(jwt: string) {

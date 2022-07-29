@@ -1,4 +1,3 @@
-import { resolve } from "path";
 import { Band, KickBandResponse, LoginResponse, UserExistsResponse } from "../types/userapi";
 import BaseService from "./BaseService";
 

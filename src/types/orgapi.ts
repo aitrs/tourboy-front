@@ -1,10 +1,16 @@
+import { Paginator } from "./generic";
+
+export type OrgStatus = 'todo' | 'raise' | 'success' | 'failure' | 'pending';
+
 export interface Org {
     id: number,
     name: string,
     description1?: string,
     description2?: string,
+    city?: string,
+    zipCode?: string,
     category?: string,
-    status?: 'todo' | 'raise' | 'success' | 'failure' | 'pending',
+    status?: OrgStatus,
     creationStamp: Date,
 }
 
@@ -18,4 +24,9 @@ export interface Contact {
     zipCode?: string,
     city?: string,
     creationStamp: Date,
+}
+
+export interface ListResponse {
+    orgs: Array<Org>,
+    pagination: Paginator,
 }

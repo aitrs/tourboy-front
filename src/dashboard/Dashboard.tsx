@@ -7,6 +7,7 @@ import BaseService from "../services/BaseService";
 import { Chip, Drawer, ListItem, Paper } from "@mui/material";
 import './Dashboard.css';
 import { KickDialog } from "./band/KickDialog";
+import { OrgTable } from "./table/OrgTable";
 
 interface DashboardState {
     bands: Array<Band>,
@@ -171,14 +172,7 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
                             userToKick={this.state.userToKick as User}
                         />
                     </div>
-                    <Drawer
-                        variant="temporary"
-                        ModalProps={{
-                            keepMounted: true,
-                        }}
-                    >
-                        azzzzzz
-                    </Drawer>
+                    <OrgTable idBand={this.state.selected?.id} />
                 </div> 
             );
         } else {
