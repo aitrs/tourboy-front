@@ -10,6 +10,7 @@ export interface Filter {
     op: 'like' | 'exact',
     filterType: 'numeric' | 'string',
     value: string,
+    likeStart: boolean,
 }
 
 export interface Paginator {

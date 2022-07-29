@@ -10,13 +10,15 @@ export type Ident = 'id' | 'name' | 'description1' | 'category' | 'status' | 'ci
 
 export interface Column {
     ident: Ident,
+    colname?: string,
     label: string,
     alias?: string,
     op?: 'like' | 'exact',
     width?: number,
     align?: 'right' | 'left',
     format?: (value: number | OrgStatus) => string,
-    filter?: string, 
+    filter?: string,
+    likeStart: boolean,
 }
 
 export interface OrgTableState {
@@ -48,6 +50,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     label: 'Nom',
                     width: 100,
                     align: 'left',
+                    likeStart: false,
                 },
                 {
                     ident: 'description1',
@@ -55,6 +58,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     label: 'Description',
                     width: 200,
                     align: 'left',
+                    likeStart: false,
                 },
                 {
                     ident: 'city',
@@ -62,13 +66,16 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     label: 'Ville',
                     width: 100,
                     align: 'left',
+                    likeStart: false,
                 },
                 {
                     ident: 'zipCode',
+                    colname: 'postal_code',
                     alias: 'a',
                     label: 'Code Postal',
                     width: 50,
                     align: 'left',
+                    likeStart: true,
                 },
                 {
                     ident: 'category',
@@ -76,6 +83,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     label: 'Categorie',
                     width: 200,
                     align: 'right',
+                    likeStart: false,
                 },
                 {
                     ident: 'status',
@@ -84,6 +92,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     label: 'Etat',
                     width: 100,
                     align: 'right',
+                    likeStart: false,
                     format: (value) => {
                         if (typeof value === 'number') {
                             return `${value}`
@@ -199,11 +208,12 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
             this.setState({
                 ...this.state,
                 filters: [...this.state.filters, {
-                    key: col.ident as string,
+                    key: col.colname ? col.colname : col.ident as string,
                     alias: col.alias,
                     op: col.op ? col.op : 'like',
                     filterType: 'string',
                     value,
+                    likeStart: col.likeStart,
                 }],
             });
         }
