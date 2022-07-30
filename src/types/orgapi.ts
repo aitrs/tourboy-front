@@ -3,7 +3,8 @@ import { Paginator } from "./generic";
 export type OrgStatus = 'todo' | 'raise' | 'success' | 'failure' | 'pending';
 
 export interface Org {
-    id: number,
+    idActivity: number,
+    idOrg: number,
     name: string,
     description1?: string,
     description2?: string,
@@ -11,6 +12,8 @@ export interface Org {
     zipCode?: string,
     category?: string,
     status?: OrgStatus,
+    userId?: number,
+    userPseudo?: string,
     creationStamp: Date,
 }
 
@@ -29,4 +32,14 @@ export interface Contact {
 export interface ListResponse {
     orgs: Array<Org>,
     pagination: Paginator,
+}
+
+export interface TagResponse {
+    tagged: boolean,
+    reason?: string,
+}
+
+export interface TagRequest {
+    orgs: Array<number>,
+    status: OrgStatus,
 }

@@ -1,0 +1,24 @@
+.orgdialog {
+    min-width: calc(70vw) !important;
+}
+
+.orgdialogflextop {
+    display: flex;
+}
+
+.orgfirsthalf {
+    flex: 1;
+}
+
+.orgsecondhalf {
+    flex: 1;
+}
+
+.orginneractions {
+    display: flex;
+    align-items: center;
+}
+
+.orginnerbutton {
+    flex: 1;
+}

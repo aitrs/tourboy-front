@@ -4,9 +4,10 @@ import React from "react";
 import OrgService from "../../services/OrgService";
 import { Filter } from "../../types/generic";
 import { Org, OrgStatus } from "../../types/orgapi";
+import { OrgDialog } from "./OrgDialog";
 import './OrgTable.css';
 
-export type Ident = 'id' | 'name' | 'description1' | 'category' | 'status' | 'city' | 'zipCode';
+export type Ident = 'idActivity' | 'name' | 'description1' | 'category' | 'status' | 'city' | 'zipCode' | 'userPseudo';
 
 export interface Column {
     ident: Ident,
@@ -30,6 +31,8 @@ export interface OrgTableState {
     pageCount?: number,
     totalItems?: number,
     selected: Array<Org>,
+    clickedOrg?: Org,
+    orgDialogOpen: boolean,
 }
 
 export interface OrgTableProps {
@@ -86,6 +89,15 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     likeStart: false,
                 },
                 {
+                    ident: 'userPseudo',
+                    colname: 'user_pseudo',
+                    alias: 'cu',
+                    label: 'Membre affecté',
+                    width: 200,
+                    align: 'right',
+                    likeStart: false,
+                },
+                {
                     ident: 'status',
                     alias: 'oa',
                     op: 'exact',
@@ -119,6 +131,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
             page: 0,
             size: 10,
             selected: [],
+            orgDialogOpen: false,
         }
     }
 
@@ -174,7 +187,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                 selected: nselection,
             });
         } else {
-            const infex = this.state.selected.findIndex(o => o.id === org.id);
+            const infex = this.state.selected.findIndex(o => o.idActivity === org.idActivity);
             if (infex !== -1) {
                 let selected = this.state.selected;
                 selected.splice(infex, 1);
@@ -187,7 +200,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
     }
 
     isItemSelected(id: number): boolean {
-        return this.state.selected.find(o => o.id === id) === undefined ? false : true;
+        return this.state.selected.find(o => o.idActivity === id) === undefined ? false : true;
     }
 
     onFilterChange(col: Column, value: string) {
@@ -227,6 +240,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
     private _retrieveData() {
         if (this.props.idBand) {
             this._orgService.orgAll(
+                this.props.idBand,
                 this.state.filters, 
                 this.state.page,
                 this.state.size
@@ -243,6 +257,21 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                 });
             })
         }
+    }
+
+    handleRowClick(org: Org) {
+        this.setState({
+            ...this.state,
+            clickedOrg: org,
+            orgDialogOpen: true,
+        });
+    }
+
+    handleOrgDialogCancel() {
+        this.setState({
+            ...this.state,
+            orgDialogOpen: false,
+        });
     }
 
     componentDidMount() {
@@ -309,9 +338,18 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                             <TableBody>
                                 {
                                     this.state.data.map(row => {
-                                        const isSelected = this.isItemSelected(row.id);
+                                        const isSelected = this.isItemSelected(row.idActivity);
                                         return(
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                                            <TableRow 
+                                                hover 
+                                                role="checkbox" 
+                                                tabIndex={-1} 
+                                                key={row.idActivity}
+                                                onClick={_ => {
+                                                    const handleClick = this.handleRowClick.bind(this);
+                                                    handleClick(row);
+                                                }}
+                                                >
                                                 <TableCell padding="checkbox">
                                                     <Checkbox
                                                         color="primary"
@@ -350,6 +388,13 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                         page={this.state.page}
                         onPageChange={this.handlePageChange.bind(this)}
                         onRowsPerPageChange={this.handleSizeChange.bind(this)}
+                    />
+                    <OrgDialog
+                        idBand={this.props.idBand}
+                        org={this.state.clickedOrg as Org}
+                        open={this.state.orgDialogOpen}
+                        onCancel={this.handleOrgDialogCancel.bind(this)}
+
                     />
                 </div>
             );

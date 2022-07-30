@@ -1,5 +1,4 @@
 import { BandCreateResponse, BandIsAdminResponse, BandMembersResponse } from "../types/bandapi";
-import { User } from "../types/userapi";
 import BaseService from "./BaseService";
 
 export default class BandService extends BaseService {
