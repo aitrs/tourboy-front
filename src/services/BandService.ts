@@ -1,4 +1,5 @@
 import { BandCreateResponse, BandIsAdminResponse, BandMembersResponse } from "../types/bandapi";
+import { User } from "../types/userapi";
 import BaseService from "./BaseService";
 
 export default class BandService extends BaseService {
@@ -52,6 +53,17 @@ export default class BandService extends BaseService {
 
         const res: BandIsAdminResponse = await response.json();
 
+        return res;
+    }
+
+    async admins(idBand: number): Promise<Array<User>> {
+        const response = await fetch(`${this._api}/admins/${idBand}`, {
+            method: 'GET',
+            headers: this._headers,
+            mode: 'cors',
+        });
+
+        const res: Array<User> = await response.json();
         return res;
     }
 

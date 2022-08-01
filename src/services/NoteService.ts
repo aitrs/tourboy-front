@@ -37,8 +37,8 @@ export default class NoteService extends BaseService {
         return res;
     }
 
-    async deleteNote(id: number): Promise<Note> {
-        const response = await fetch(`${this._api}/delete/${id}`, {
+    async deleteNote(id: number, idBand: number): Promise<Note> {
+        const response = await fetch(`${this._api}/delete/${id}/${idBand}`, {
             method: 'DELETE',
             headers: this._headers,
             mode: 'cors'

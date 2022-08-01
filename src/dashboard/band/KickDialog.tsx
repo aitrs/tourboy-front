@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Dialog, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import React from "react";
 import UserService from "../../services/UserService";
 import { FormValue } from "../../types/generic";
@@ -97,9 +97,8 @@ export class KickDialog extends React.Component<KickDialogProps, KickDialogState
                 open={this.props.open}
             >
                 <form onSubmit={this.handleSumbit.bind(this)}>
-                    <Card className="dialogcard" id="kickform" sx={{ minWidth: 300 }}>
-                        <CardHeader title="Enlever le membre d'un groupe" />
-                        <CardContent>
+                        <DialogTitle>Enlever le membre d'un groupe</DialogTitle>
+                        <DialogContent>
                             <TextField
                                 id="pwd"
                                 label="Mot de passe"
@@ -114,16 +113,15 @@ export class KickDialog extends React.Component<KickDialogProps, KickDialogState
                             <p>
                                 {this.state.errorMessage}
                             </p>
-                        </CardContent>
-                        <CardActions className="dialogactions">
+                        </DialogContent>
+                        <DialogActions className="dialogactions">
                             <Button type="submit">
                                 Enlever
                             </Button>
                             <Button type="button" onClick={this.handleCancel.bind(this)}>
                                 Annuler
                             </Button>
-                        </CardActions>
-                    </Card>
+                        </DialogActions>
                 </form>
             </Dialog>
         )

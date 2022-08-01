@@ -22,3 +22,18 @@
 .orginnerbutton {
     flex: 1;
 }
+
+.notephead {
+    background-color:rgb(31, 33, 41);
+}
+
+.notepheaduser {
+    display: inline-block;
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+.notepheadtime {
+    font-style: italic;
+    font-size: smaller;
+}

@@ -1,15 +1,19 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Chip, Dialog, Icon, ListItem, Paper } from "@mui/material";
 import React from "react";
+import { dateFormatAny } from "../../lib/lib";
 import NoteService from "../../services/NoteService";
 import OrgService from "../../services/OrgService";
 import { Note } from "../../types/noteapi";
 import { Contact, Org } from "../../types/orgapi";
+import { User } from "../../types/userapi";
 import './OrgDialog.css';
+import { NoteDialog } from "./orgdialog/NoteDialog";
 
 export interface OrgDialogProps {
     idBand: number,
     org: Org,
     open: boolean,
+    bandAdmins?: Array<User>,
     onCancel: () => void,
 }
 
@@ -18,7 +22,10 @@ export interface OrgDialogState {
     contactDialogData?: Contact,
     contacts: Array<Contact>,
     notes: Array<Note>,
+    noteDialogOpen: boolean,
+    currentEditedNote?: Note,
     loaded: boolean,
+    prevProps?: OrgDialogProps,
 }
 
 export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
@@ -31,6 +38,7 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
             contactDialogOpened: false,
             contacts: [],
             notes: [],
+            noteDialogOpen: false,
             loaded: false,
         };
     }
@@ -60,13 +68,74 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
     }
 
     componentDidUpdate() {
-        if(this.props.org && !this.state.loaded) {
-            this._load();
+        if (this.state.prevProps) {
+            if (this.props !== this.state.prevProps) {
+                this.setState({
+                    ...this.state,
+                    prevProps: this.props,
+                }, () => {
+                    this._load();
+                });
+            }
+        } else {
+            if (this.props.org) {
+                this.setState({
+                    ...this.state,
+                    prevProps: this.props,
+                }, () => {
+                    this._load();
+                });
+            }
         }
     }
 
     handleCancel(_event: any) {
+        this.setState({
+            ...this.state,
+            loaded: false,
+        });
         this.props.onCancel();
+    }
+
+    handleNoteDialogOpen() {
+        this.setState({
+            ...this.state,
+            currentEditedNote: undefined,
+            noteDialogOpen: true,
+        })
+    }
+
+    handleNoteDialogCancel() {
+        this.setState({
+            ...this.state,
+            noteDialogOpen: false,
+            currentEditedNote: undefined,
+        });
+    }
+
+    handleNoteDialogSave(note: Note) {
+        const newnotes = [note, ...this.state.notes];
+        this.setState({
+            ...this.state,
+            notes: newnotes,
+            noteDialogOpen: false,
+            currentEditedNote: undefined,
+        });
+    }
+
+    handleNoteDialogEdit(note: Note) {
+        let notes = this.state.notes;
+        const index = notes.findIndex(n => note.id === n.id);
+        
+        if(index !== -1) {
+            notes[index].note = note.note;
+            this.setState({
+                ...this.state,
+                notes,
+                noteDialogOpen: false,
+                currentEditedNote: undefined,
+            });
+        }
     }
  
     renderChips(): JSX.Element {
@@ -110,20 +179,67 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                 className="notepaper"
                 title="Notes"
                 sx={{
-                    minHeight: 20,
+                    minHeight: '20vh',
+                    maxHeight: '20vh',
+                    scrollbarColor: 'gray',
+                    overflowY: 'scroll', 
+                    '&::-webkit-scrollbar': {
+                        width: '0.4em'
+                        },
+                        '&::-webkit-scrollbar-track': {
+                        boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+                        webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: 'rgba(0,0,0,.1)',
+                        outline: '1px solid slategrey'
+                        }
                 }}
             >
                 {
                     this.state.notes.map((n) => {
+                        const isEditable: boolean = n.user ? n.user.id === this._noteService.userId : false;
+                        const isDeletable: boolean = this.props.bandAdmins ? this.props.bandAdmins.findIndex(u => u.id === this._noteService.userId) !== -1 : false;
                         return(
                             <p className="notep">
                                 <div className="notephead">
-                                    <span className="notepheadtime">
-                                        {n.creationStamp.toLocaleString()}
-                                    </span>
                                     <span className="notepheaduser">
                                         {n.user ? n.user.pseudo : ''}
                                     </span>
+                                    <span className="notepheadtime">
+                                        {dateFormatAny(n.creationStamp.toLocaleString())}
+                                    </span>
+                                    {isEditable ? <Button onClick={(_e) => {
+                                        this.setState({
+                                            ...this.state,
+                                            currentEditedNote: n,
+                                        }, () => {
+                                            this.setState({
+                                                ...this.state,
+                                                noteDialogOpen: true,
+                                            })
+                                        });
+                                    }}>
+                                        <Icon>edit</Icon>
+                                    </Button> : 
+                                    <span></span>}
+                                    {
+                                        isDeletable ?
+                                            <Button onClick={async (_e) => {
+                                                const note = await this._noteService.deleteNote(n.id, this.props.idBand);
+                                                const index = this.state.notes.findIndex(nn => nn.id === note.id);
+                                                if (index !== -1) {
+                                                    let notes = this.state.notes;
+                                                    notes.splice(index, 1);
+                                                    this.setState({
+                                                        ...this.state,
+                                                        notes,
+                                                    });
+                                                }
+                                            }}><Icon>delete</Icon></Button>
+                                            :
+                                            <span></span>
+                                    }
                                 </div>
                                 <div className="notepbody">{n.note}</div>
                             </p>
@@ -133,6 +249,8 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
             </Paper>
         )
     }
+
+    
 
     render(): JSX.Element {
         const porg = this.props.org;
@@ -170,7 +288,7 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                                     {porg.city}<br />
                                     {porg.zipCode}<br />
                                     {porg.category}<br />
-                                    {porg.creationStamp.toLocaleString()}<br />
+                                    {dateFormatAny(porg.creationStamp.toLocaleString())}<br />
                                 </div>
                             </div>
                             {chips}
@@ -180,12 +298,22 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                                     Ajouter contact
                                     <Icon>people</Icon>
                                 </Button>
-                                <Button className="orginnerbutton">
+                                <Button className="orginnerbutton" onClick={this.handleNoteDialogOpen.bind(this)}>
                                     Ajouter note
                                     <Icon>edit</Icon>
                                 </Button>
                             </div>
                         </CardContent>
+                        <NoteDialog 
+                            idActivity={this.props.org.idActivity}
+                            idBand={this.props.idBand}
+                            open={this.state.noteDialogOpen}
+                            onCancel={this.handleNoteDialogCancel.bind(this)}
+                            onEdit={this.handleNoteDialogEdit.bind(this)}
+                            onSave={this.handleNoteDialogSave.bind(this)}
+                            note={this.state.currentEditedNote}
+                            key={this.state.currentEditedNote ? this.state.currentEditedNote.id : 0}
+                        />
                         <CardActions id="bandactions">
                             <Button
                                 onClick={this.handleCancel.bind(this)}

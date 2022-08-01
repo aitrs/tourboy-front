@@ -4,6 +4,7 @@ import React from "react";
 import OrgService from "../../services/OrgService";
 import { Filter } from "../../types/generic";
 import { Org, OrgStatus } from "../../types/orgapi";
+import { User } from "../../types/userapi";
 import { OrgDialog } from "./OrgDialog";
 import './OrgTable.css';
 
@@ -37,6 +38,7 @@ export interface OrgTableState {
 
 export interface OrgTableProps {
     idBand?: number,
+    bandAdmins?: Array<User>,
 }
 
 export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
@@ -255,7 +257,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     pageCount: rows.pagination.pageCount,
                     totalItems: rows.pagination.itemCount,
                 });
-            })
+            });
         }
     }
 
@@ -263,7 +265,11 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
         this.setState({
             ...this.state,
             clickedOrg: org,
-            orgDialogOpen: true,
+        }, () => {
+            this.setState({
+                ...this.state,
+                orgDialogOpen: true,
+            })
         });
     }
 
@@ -394,7 +400,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                         org={this.state.clickedOrg as Org}
                         open={this.state.orgDialogOpen}
                         onCancel={this.handleOrgDialogCancel.bind(this)}
-
+                        bandAdmins={this.props.bandAdmins}
                     />
                 </div>
             );

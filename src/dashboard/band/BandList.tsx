@@ -12,6 +12,7 @@ export interface BandListProps {
     onAddMember: (member: User) => void;
     onAddBand: (band: Band, create: boolean) => void;
     onSelected: (band: Band) => void;
+    onAdmins: (users: Array<User>) => void;
     userToKick?: User,
 }
 
@@ -26,7 +27,6 @@ export interface BandListState {
 
 export default class BandList extends React.Component<BandListProps, BandListState> {
     private _bandService = new BandService();
-    private _userService = new UserService();
     constructor(props: BandListProps) {
         super(props);
         this.state = {
@@ -55,6 +55,9 @@ export default class BandList extends React.Component<BandListProps, BandListSta
                     isAdministed: resp.isAdmin,
                 });
             });
+            this._bandService.admins(id).then(admins => {
+                this.props.onAdmins(admins);
+            })
             this.props.onSelected(found);
         }
     }

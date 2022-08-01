@@ -15,6 +15,7 @@ interface DashboardState {
     allRetrieved: boolean,
     kickOpened: boolean,
     selected?: Band,
+    bandAdmin?: Array<User>,
     userToKick?: User,
 }
 
@@ -113,6 +114,13 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
         })
     }
 
+    handleAdmins(users: Array<User>) {
+        this.setState({
+            ...this.state,
+            bandAdmin: users,
+        })
+    }
+
     renderChips() {
         return(
             <Paper
@@ -162,6 +170,7 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
                             onAddMember={this.handleMemberAdd.bind(this)}
                             onAddBand={this.handleAddBand.bind(this)}
                             onSelected={this.handleSelected.bind(this)}
+                            onAdmins={this.handleAdmins.bind(this)}
                         />
                         {chips}
                         <KickDialog
@@ -172,7 +181,7 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
                             userToKick={this.state.userToKick as User}
                         />
                     </div>
-                    <OrgTable idBand={this.state.selected?.id} />
+                    <OrgTable idBand={this.state.selected?.id} bandAdmins={this.state.bandAdmin} />
                 </div> 
             );
         } else {
