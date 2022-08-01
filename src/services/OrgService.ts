@@ -19,7 +19,7 @@ export default class OrgService extends BaseService {
     async tag(idBand: number, orgs: Array<Org>, idUser: number, status: OrgStatus): Promise<TagResponse> {
         const request: TagRequest = {
             status,
-            orgs: orgs.map(o => o.idActivity),
+            orgs: orgs.map(o => o.idOrg),
         };
         const response = await fetch(`${this._api}/tag/${idBand}/${idUser}`, {
             method: 'PATCH',

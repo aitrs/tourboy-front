@@ -1,12 +1,16 @@
-import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from "@mui/material";
+import { RepeatOneSharp } from "@mui/icons-material";
+import { Button, Checkbox, Icon, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from "@mui/material";
 import { off } from "process";
 import React from "react";
+import { isExportAssignment } from "typescript";
 import OrgService from "../../services/OrgService";
 import { Filter } from "../../types/generic";
-import { Org, OrgStatus } from "../../types/orgapi";
+import { Org, OrgStatus, TagRequest, TagResponse } from "../../types/orgapi";
 import { User } from "../../types/userapi";
 import { OrgDialog } from "./OrgDialog";
+import { MenuActions } from "./orgdialog/MenuActions";
 import './OrgTable.css';
+import { UserAffectationDialog } from "./UserAffectationDialog";
 
 export type Ident = 'idActivity' | 'name' | 'description1' | 'category' | 'status' | 'city' | 'zipCode' | 'userPseudo';
 
@@ -34,11 +38,13 @@ export interface OrgTableState {
     selected: Array<Org>,
     clickedOrg?: Org,
     orgDialogOpen: boolean,
+    affectationSelected?: Org,
 }
 
 export interface OrgTableProps {
     idBand?: number,
     bandAdmins?: Array<User>,
+    bandUsers: Array<User>,
 }
 
 export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
@@ -78,7 +84,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     colname: 'postal_code',
                     alias: 'a',
                     label: 'Code Postal',
-                    width: 50,
+                    width: 100,
                     align: 'left',
                     likeStart: true,
                 },
@@ -94,8 +100,8 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     ident: 'userPseudo',
                     colname: 'user_pseudo',
                     alias: 'cu',
-                    label: 'Membre affecté',
-                    width: 200,
+                    label: 'Affectation',
+                    width: 100,
                     align: 'right',
                     likeStart: false,
                 },
@@ -108,12 +114,13 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     align: 'right',
                     likeStart: false,
                     format: (value) => {
+                        console.log(value);
                         if (typeof value === 'number') {
                             return `${value}`
                         } else {
                             switch(value as OrgStatus) {
                                 case 'todo':
-                                    return 'TODO';
+                                    return 'Todo';
                                 case 'success':
                                     return 'Succès';
                                 case 'failure':
@@ -123,7 +130,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                                 case 'pending':
                                     return 'En cours';
                                 default:
-                                    return 'TODO';
+                                    return 'Todo';
                             }
                         }
                     }
@@ -280,6 +287,40 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
         });
     }
 
+    handleAffectation(org: Org) {
+        this.setState({
+            ...this.state,
+            affectationSelected: org,
+        });
+    }
+
+    handleStatusAffectation(org: Org, status: OrgStatus, idUser: number) {
+        this._orgService.tag(
+            this.props.idBand as number,
+            [org],
+            idUser,
+            status,
+        ).then(resp => {
+            if (resp.tagged) {
+                this._retrieveData();
+            } else {
+                alert(resp.reason as string);
+            }
+        })
+    }
+
+    handleTag(user: User, response: TagResponse) {
+        if (response.tagged) {
+            this.setState({
+                ...this.state,
+                affectationSelected: undefined,
+            })
+            this._retrieveData();
+        } else {
+            alert(response.reason as string);
+        }
+    }
+
     componentDidMount() {
     }
 
@@ -339,12 +380,31 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                                             </TableCell>
                                         ))
                                     }
+                                    <TableCell
+                                        align="right"
+                                        style={{ width: '20px'}}
+                                    >
+                                        Actions
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {
                                     this.state.data.map(row => {
                                         const isSelected = this.isItemSelected(row.idActivity);
+                                        const isAdmin = this.props.bandAdmins ? 
+                                            this.props.bandAdmins.findIndex(ba => ba.id === this._orgService.userId) !== -1
+                                            :
+                                            undefined;
+                                        const isAffected = isAdmin ?
+                                            Boolean(row.userId)
+                                            :
+                                            row.userId ? row.userId === this._orgService.userId  : undefined
+
+                                        const bgColor = row.userId === this._orgService.userId ? 
+                                                'rgb(50, 33, 41)'
+                                                :
+                                                row.userId ? 'rgb(31, 33, 41)' : 'inherit';
                                         return(
                                             <TableRow 
                                                 hover 
@@ -355,8 +415,13 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                                                     const handleClick = this.handleRowClick.bind(this);
                                                     handleClick(row);
                                                 }}
+                                                style={{
+                                                    backgroundColor: bgColor,
+                                                }}
                                                 >
-                                                <TableCell padding="checkbox">
+                                                <TableCell 
+                                                    padding="checkbox"
+                                                >
                                                     <Checkbox
                                                         color="primary"
                                                         checked={isSelected}
@@ -369,16 +434,50 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                                                 {
                                                     this.state.layout.map(col => {
                                                         const val = row[col.ident];
-
+                                                        console.log(val);
                                                         return (
-                                                            <TableCell key={col.ident} align={col.align}>
+                                                            <TableCell 
+                                                                key={col.ident} 
+                                                                align={col.align}
+                                                                style={{
+                                                                    minWidth: col.width,
+                                                                    maxWidth: col.width,
+                                                                }}
+                                                            >
                                                                 {
-                                                                    col.format ? col.format(typeof val === 'number' ? val as number : val as OrgStatus) : val
+                                                                    col.format ? col.format(val as OrgStatus) : val
                                                                 }
                                                             </TableCell>
                                                         )
                                                     })
                                                 }
+                                                <TableCell
+                                                    align="right"
+                                                >
+                                                    <MenuActions
+                                                        org={row}
+                                                        idBand={this.props.idBand}
+                                                        idUser={this._orgService.userId}
+                                                        isAdmin={isAdmin}
+                                                        isAffected={isAffected}
+                                                        onAffectation={this.handleAffectation.bind(this)}
+                                                        onStatusAffectation={this.handleStatusAffectation.bind(this)}
+                                                    />
+                                                    <UserAffectationDialog
+                                                        org={row}
+                                                        idBand={this.props.idBand as number}
+                                                        open={this.state.affectationSelected ? this.state.affectationSelected.idActivity === row.idActivity : false}
+                                                        onClose={() => {
+                                                            this.setState({
+                                                                ...this.state,
+                                                                affectationSelected: undefined,
+                                                            });
+                                                        }}
+                                                        onTagged={this.handleTag.bind(this)}
+                                                        key={this.props.idBand ? this.props.idBand : 0}
+                                                        bandUsers={this.props.bandUsers}
+                                                    />
+                                                </TableCell>
                                             </TableRow>
                                         )
                                     })

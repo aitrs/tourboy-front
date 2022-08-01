@@ -116,7 +116,7 @@ export class NoteDialog extends React.Component<NoteDialogProps, NoteDialogState
                 <form onSubmit={this.handleSubmit.bind(this)}>
                         <DialogTitle>{"Note"}</DialogTitle>
                         <DialogContent
-                            style={{ height: '25vh', width: '20vw'}}
+                            style={{ height: '31vh', width: '20vw'}}
                         >
                             <TextField
                                 id="note"

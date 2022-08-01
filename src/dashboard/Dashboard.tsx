@@ -181,7 +181,7 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
                             userToKick={this.state.userToKick as User}
                         />
                     </div>
-                    <OrgTable idBand={this.state.selected?.id} bandAdmins={this.state.bandAdmin} />
+                    <OrgTable bandUsers={this.state.currentMembers} idBand={this.state.selected?.id} bandAdmins={this.state.bandAdmin} />
                 </div> 
             );
         } else {

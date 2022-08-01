@@ -179,8 +179,8 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                 className="notepaper"
                 title="Notes"
                 sx={{
-                    minHeight: '20vh',
-                    maxHeight: '20vh',
+                    minHeight: '25vh',
+                    maxHeight: '25vh',
                     scrollbarColor: 'gray',
                     overflowY: 'scroll', 
                     '&::-webkit-scrollbar': {
