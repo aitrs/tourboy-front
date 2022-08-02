@@ -8,6 +8,8 @@ import React from "react";
 import BaseService from "./services/BaseService";
 import LoginService from "./services/UserService";
 import './Login.css';
+import { GoogleLoginButton } from "ts-react-google-login-component";
+
 
 interface LoginState {
     email?: string,
@@ -17,6 +19,9 @@ interface LoginState {
 
 export default class Login extends React.Component {
     private _loginService = new LoginService();
+    private _clientConfig = {
+        client_id: '241192926696-g95ces22pifqqa0u77lue9h6h6ct33cn.apps.googleusercontent.com',     
+    };
 
     constructor(props: Object) {
         super(props);
@@ -39,6 +44,10 @@ export default class Login extends React.Component {
         let st: LoginState = (this.state as unknown) as LoginState;
         st.email = event.currentTarget.value;
         this.setState(st);
+    }
+
+    async googleResponse(user: any) {
+        console.log(user);
     }
 
     async submit(event: any) {
@@ -79,6 +88,12 @@ export default class Login extends React.Component {
                         <Button type="submit">
                             Login
                         </Button>
+                        <br />
+                        <GoogleLoginButton 
+                            clientConfig={this._clientConfig}
+                            responseHandler={this.googleResponse.bind(this)}
+                            failureHandler={(e) => { console.error(e); }}
+                        />
                     </CardActions>
                 </Card>
             </form>
