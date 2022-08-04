@@ -3,6 +3,7 @@ import { Button, Checkbox, Icon, Table, TableBody, TableCell, TableContainer, Ta
 import { off } from "process";
 import React from "react";
 import { isExportAssignment } from "typescript";
+import { brotliCompress } from "zlib";
 import OrgService from "../../services/OrgService";
 import { Filter } from "../../types/generic";
 import { Org, OrgStatus, TagRequest, TagResponse } from "../../types/orgapi";
@@ -114,7 +115,6 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                     align: 'right',
                     likeStart: false,
                     format: (value) => {
-                        console.log(value);
                         if (typeof value === 'number') {
                             return `${value}`
                         } else {
@@ -227,17 +227,56 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                 filters,
             });
         } else {
-            this.setState({
-                ...this.state,
-                filters: [...this.state.filters, {
-                    key: col.colname ? col.colname : col.ident as string,
-                    alias: col.alias,
-                    op: col.op ? col.op : 'like',
-                    filterType: 'string',
-                    value,
-                    likeStart: col.likeStart,
-                }],
-            });
+            if (col.ident === 'status') {
+                let trad = '';
+                switch (value.toLocaleLowerCase()) {
+                    case 'succès':
+                        trad = 'success';
+                        break;
+                    case 'succes':
+                        trad = 'success';
+                        break;
+                    case 'todo':
+                        trad = 'todo';
+                        break;
+                    case 'echec':
+                        trad = 'failure';
+                        break;
+                    case 'échec':
+                        trad = 'failure';
+                        break;
+                    case 'relancer':
+                        trad = 'raise';
+                        break;
+                    case 'en attente':
+                        trad = 'pending';
+                        break;
+                };
+                if (trad !== '') {
+                    this.setState({
+                        ...this.state,
+                        filters: [...this.state.filters, {
+                            key: col.colname ? col.colname : col.ident as string,
+                            op: 'exact',
+                            filterType: 'string',
+                            value: trad,
+                            likeStart: false,
+                        }],
+                    })
+                }
+            } else {
+                this.setState({
+                    ...this.state,
+                    filters: [...this.state.filters, {
+                        key: col.colname ? col.colname : col.ident as string,
+                        alias: col.alias,
+                        op: col.op ? col.op : 'like',
+                        filterType: 'string',
+                        value,
+                        likeStart: col.likeStart,
+                    }],
+                });
+            }
         }
     }
 
@@ -325,7 +364,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
     }
 
     render(): JSX.Element {
-        if (this.props.idBand) {
+        if (this.props.idBand && this.state.totalItems) {
             return(
                 <div className="tablecont">
                     <TableContainer sx={{
@@ -434,7 +473,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
                                                 {
                                                     this.state.layout.map(col => {
                                                         const val = row[col.ident];
-                                                        console.log(val);
+                                                        
                                                         return (
                                                             <TableCell 
                                                                 key={col.ident} 

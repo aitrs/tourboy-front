@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Chip, Dialog, Icon, ListItem, Paper } from "@mui/material";
+import { Button, Card, CardActions, CardContent, CardHeader, Chip, Dialog, Divider, Icon, ListItem, Paper } from "@mui/material";
 import React from "react";
 import { dateFormatAny } from "../../lib/lib";
 import NoteService from "../../services/NoteService";
@@ -201,7 +201,7 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                         const isEditable: boolean = n.user ? n.user.id === this._noteService.userId : false;
                         const isDeletable: boolean = this.props.bandAdmins ? this.props.bandAdmins.findIndex(u => u.id === this._noteService.userId) !== -1 : false;
                         return(
-                            <p className="notep">
+                            <div className="notep" key={n.id}>
                                 <div className="notephead">
                                     <span className="notepheaduser">
                                         {n.user ? n.user.pseudo : ''}
@@ -242,7 +242,7 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                                     }
                                 </div>
                                 <div className="notepbody">{n.note}</div>
-                            </p>
+                            </div>
                         )
                     })
                 }
@@ -254,78 +254,82 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
 
     render(): JSX.Element {
         const porg = this.props.org;
-        if (this.state.loaded) {
-            const chips = this.renderChips();
-            const notes = this.renderNotes();
+        const chips = this.renderChips();
+        const notes = this.renderNotes();
+        const dialogInner: JSX.Element = 
+        this.state.loaded ?
+            <Card>
+                <CardHeader
+                    title="Organisme"
+                />
+                <CardContent className="orgdialogcontent">
+                    <div className="orgdialogflextop">
+                        <div className="orgfirsthalf">
+                            <strong>Id:</strong><br />
+                            <strong>Nom:</strong><br />
+                            <strong>Description:</strong><br />
+                            <strong>Activité:</strong><br />
+                            <strong>Ville:</strong><br />
+                            <strong>Code Postal:</strong><br />
+                            <strong>Catégorie:</strong><br />
+                            <strong>Date de création:</strong><br />
+                        </div>
+                        <div className="orgsecondhalf">
+                            {porg.idActivity}<br />
+                            {porg.name}<br />
+                            {porg.description1}<br />
+                            {porg.description2}<br />
+                            {porg.city}<br />
+                            {porg.zipCode}<br />
+                            {porg.category}<br />
+                            {dateFormatAny(porg.creationStamp.toLocaleString())}<br />
+                        </div>
+                    </div>
+                    <br />
+                    <Divider>Notes</Divider>
+                    <div>
+                        {notes}
+                    </div>
+                    <div className="orginneractions">
+                        <Button className="orginnerbutton">
+                            Ajouter contact
+                            <Icon>people</Icon>
+                        </Button>
+                        <Button className="orginnerbutton" onClick={this.handleNoteDialogOpen.bind(this)}>
+                            Ajouter note
+                            <Icon>edit</Icon>
+                        </Button>
+                    </div>
+                </CardContent>
+                <NoteDialog 
+                    idActivity={this.props.org.idActivity}
+                    idBand={this.props.idBand}
+                    open={this.state.noteDialogOpen}
+                    onCancel={this.handleNoteDialogCancel.bind(this)}
+                    onEdit={this.handleNoteDialogEdit.bind(this)}
+                    onSave={this.handleNoteDialogSave.bind(this)}
+                    note={this.state.currentEditedNote}
+                    key={this.state.currentEditedNote ? this.state.currentEditedNote.id : 0}
+                />
+                <CardActions id="bandactions">
+                    <Button
+                        onClick={this.handleCancel.bind(this)}
+                    >
+                        <Icon>cancel</Icon>
+                    </Button>
+                </CardActions>
+            </Card>
+        :
+            <div>Chargement...</div>;
 
-            return(
-                <Dialog
-                    open={this.props.open}
-                    fullWidth={true}
-                    maxWidth={'lg'}
-                >
-                    <Card>
-                        <CardHeader
-                            title="Organisme"
-                        />
-                        <CardContent className="orgdialogcontent">
-                            <div className="orgdialogflextop">
-                                <div className="orgfirsthalf">
-                                    <strong>Id:</strong><br />
-                                    <strong>Nom:</strong><br />
-                                    <strong>Description:</strong><br />
-                                    <strong>Activité:</strong><br />
-                                    <strong>Ville:</strong><br />
-                                    <strong>Code Postal:</strong><br />
-                                    <strong>Catégorie:</strong><br />
-                                    <strong>Date de création:</strong><br />
-                                </div>
-                                <div className="orgsecondhalf">
-                                    {porg.idActivity}<br />
-                                    {porg.name}<br />
-                                    {porg.description1}<br />
-                                    {porg.description2}<br />
-                                    {porg.city}<br />
-                                    {porg.zipCode}<br />
-                                    {porg.category}<br />
-                                    {dateFormatAny(porg.creationStamp.toLocaleString())}<br />
-                                </div>
-                            </div>
-                            {chips}
-                            {notes}
-                            <div className="orginneractions">
-                                <Button className="orginnerbutton">
-                                    Ajouter contact
-                                    <Icon>people</Icon>
-                                </Button>
-                                <Button className="orginnerbutton" onClick={this.handleNoteDialogOpen.bind(this)}>
-                                    Ajouter note
-                                    <Icon>edit</Icon>
-                                </Button>
-                            </div>
-                        </CardContent>
-                        <NoteDialog 
-                            idActivity={this.props.org.idActivity}
-                            idBand={this.props.idBand}
-                            open={this.state.noteDialogOpen}
-                            onCancel={this.handleNoteDialogCancel.bind(this)}
-                            onEdit={this.handleNoteDialogEdit.bind(this)}
-                            onSave={this.handleNoteDialogSave.bind(this)}
-                            note={this.state.currentEditedNote}
-                            key={this.state.currentEditedNote ? this.state.currentEditedNote.id : 0}
-                        />
-                        <CardActions id="bandactions">
-                            <Button
-                                onClick={this.handleCancel.bind(this)}
-                            >
-                                <Icon>cancel</Icon>
-                            </Button>
-                        </CardActions>
-                    </Card>
-                </Dialog>
-            )
-        } else {
-            return(<div>Chargement...</div>)
-        }
+        return(
+            <Dialog
+                open={this.props.open}
+                fullWidth={true}
+                maxWidth={'lg'}
+            >
+                {dialogInner}
+            </Dialog>
+        )
     }
 }

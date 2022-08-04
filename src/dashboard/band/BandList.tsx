@@ -1,18 +1,15 @@
 import { Button, FormControl, Icon, InputLabel, MenuItem, Select, Tooltip } from "@mui/material";
 import React from "react";
 import BandService from "../../services/BandService";
-import UserService from "../../services/UserService";
 import { Band, User } from "../../types/userapi";
 import { BandDialog } from "./BandDialog";
 import './BandList.css';
 import { MemberDialog } from "./MemberDialog";
 export interface BandListProps {
     bands: Array<Band>,
-    onMembers: (members: Array<User>) => void,
     onAddMember: (member: User) => void;
     onAddBand: (band: Band, create: boolean) => void;
-    onSelected: (band: Band) => void;
-    onAdmins: (users: Array<User>) => void;
+    onSelected: (band: Band, members: Array<User>, admins: Array<User>) => void;
     userToKick?: User,
 }
 
@@ -47,7 +44,9 @@ export default class BandList extends React.Component<BandListProps, BandListSta
                 selected: found,
             });
             this._bandService.members(id).then(mr => {
-                this.props.onMembers(mr.members);
+                this._bandService.admins(id).then(admins => {
+                    this.props.onSelected(found, mr.members, admins);
+                })
             });
             this._bandService.isAdmin(id).then(resp => {
                 this.setState({
@@ -55,10 +54,6 @@ export default class BandList extends React.Component<BandListProps, BandListSta
                     isAdministed: resp.isAdmin,
                 });
             });
-            this._bandService.admins(id).then(admins => {
-                this.props.onAdmins(admins);
-            })
-            this.props.onSelected(found);
         }
     }
 
@@ -68,7 +63,6 @@ export default class BandList extends React.Component<BandListProps, BandListSta
             selected: undefined,
             dialogOpened: true,
         });
-        console.log(this.state);
     }
 
     clickEdit() {
@@ -137,12 +131,23 @@ export default class BandList extends React.Component<BandListProps, BandListSta
         });
     }
 
+    private _genTooltipTag(title: string, inner: JSX.Element): JSX.Element {
+        if ((this.state.selected === undefined) || !this.state.isAdministed) {
+            return(inner);
+        } else {
+            return(
+                <Tooltip title={title} >
+                    {inner}
+                </Tooltip>
+            );
+        }
+    }
 
     render() {
         let options = [];
         for(let b of this.props.bands) {
             options.push(
-                <MenuItem value={b.id}>{b.name}</MenuItem>
+                <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
             );
         }
 
@@ -154,6 +159,7 @@ export default class BandList extends React.Component<BandListProps, BandListSta
                         labelId="band-select-label"
                         id="band-select"
                         label="Groupe"
+                        value={this.state.selected? `${this.state.selected.id}` : ''}
                         onChange={this.handleBandChange.bind(this)}
                     >
                         {options}
@@ -166,29 +172,29 @@ export default class BandList extends React.Component<BandListProps, BandListSta
                     href="https://fonts.googleapis.com/icon?family=Material+Icons"
                 />
                 <div className="bandlistbuttons">
-                    <Tooltip title="Ajouter un groupe" className="bandlistbuttonitem">
-                        <Button
+                    <Tooltip title="Ajouter un groupe">
+                        <Button className="bandlistbuttonitem"
                             onClick={this.clickCreate.bind(this)}
                         >
                             <Icon>add</Icon>
                         </Button>
                     </Tooltip>
-                    <Tooltip title="Editer le nom du groupe" className="bandlistbuttonitem">
-                        <Button 
+                    {this._genTooltipTag("Editer le nom du groupe",
+                        <Button className="bandlistbuttonitem"
                             onClick={this.clickEdit.bind(this)}
-                            disabled={(this.state.selected === undefined) && !this.state.isAdministed}
+                            disabled={(this.state.selected === undefined) || !this.state.isAdministed}
                         >
                             <Icon>edit</Icon>
                         </Button>
-                    </Tooltip>
-                    <Tooltip title="Ajouter un membre" className="bandlistbuttonitem">
-                        <Button
+                    )}
+                    {this._genTooltipTag("Ajouter un membre",
+                        <Button className="bandlistbuttonitem"
                             onClick={this.clickMember.bind(this)}
-                            disabled={(this.state.selected === undefined) && !this.state.isAdministed}
+                            disabled={(this.state.selected === undefined) || !this.state.isAdministed}
                         >
                             <Icon>people</Icon>
                         </Button>
-                    </Tooltip>
+                    )}
                 </div>
                 <BandDialog
                     open={this.state.dialogOpened}

@@ -1,6 +1,6 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { Label } from "@mui/icons-material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import React from "react";
-import BandService from "../../services/BandService";
 import OrgService from "../../services/OrgService";
 import { Org, TagResponse } from "../../types/orgapi";
 import { User } from "../../types/userapi";
@@ -21,7 +21,6 @@ export interface UserAffectationState {
 
 export class UserAffectationDialog extends React.Component<UserAffectationProps, UserAffectationState> {
     private _orgService = new OrgService();
-    private _bandService = new BandService();
 
     constructor(props: UserAffectationProps) {
         super(props);
@@ -78,9 +77,11 @@ export class UserAffectationDialog extends React.Component<UserAffectationProps,
                         Affecter un membre
                     </DialogTitle>
                     <DialogContent>
+                        <br />
                         <FormControl fullWidth error={this.state.error}>
+                            <InputLabel>Membre</InputLabel>
                             <Select
-                                value={this.state.selected ?  `${this.state.selected.id}` : '0'}
+                                value={this.state.selected ?  `${this.state.selected.id}` : ''}
                                 label="Membre"
                                 onChange={this.handleChange.bind(this)}
                             >
@@ -89,6 +90,7 @@ export class UserAffectationDialog extends React.Component<UserAffectationProps,
                                         .map(u => {
                                             return(
                                                 <MenuItem
+                                                    key={u.id}
                                                     value={`${u.id}`}
                                                     onClick={(event) => {event.stopPropagation();}}
                                                     >

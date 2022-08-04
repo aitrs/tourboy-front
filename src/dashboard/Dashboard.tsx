@@ -41,17 +41,11 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
     componentDidMount() {
         this.userService.getBands().then(bands => {
           this.setState({
+            ...this.state,
             bands,
             allRetrieved: true,
           })  
         });
-    }
-
-    handleMembers(members: Array<User>) {
-        this.setState({
-            ...this.state,
-            currentMembers: members,
-        })
     }
 
     handleMemberRemoval(user: User) {
@@ -107,18 +101,13 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
         });
     }
 
-    handleSelected(band: Band) {
+    handleSelected(band: Band, members: Array<User>, admins: Array<User>) {
         this.setState({
             ...this.state,
             selected: band,
-        })
-    }
-
-    handleAdmins(users: Array<User>) {
-        this.setState({
-            ...this.state,
-            bandAdmin: users,
-        })
+            currentMembers: members,
+            bandAdmin: admins,
+        });
     }
 
     renderChips() {
@@ -166,11 +155,9 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
                     <div className="topband">
                         <BandList
                             bands={this.state.bands} 
-                            onMembers={this.handleMembers.bind(this)}
                             onAddMember={this.handleMemberAdd.bind(this)}
                             onAddBand={this.handleAddBand.bind(this)}
                             onSelected={this.handleSelected.bind(this)}
-                            onAdmins={this.handleAdmins.bind(this)}
                         />
                         {chips}
                         <KickDialog
