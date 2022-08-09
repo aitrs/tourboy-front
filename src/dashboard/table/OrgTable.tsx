@@ -364,7 +364,7 @@ export class OrgTable extends React.Component<OrgTableProps, OrgTableState> {
     }
 
     render(): JSX.Element {
-        if (this.props.idBand && this.state.totalItems) {
+        if (this.props.idBand && this.state.totalItems !== undefined) {
             return(
                 <div className="tablecont">
                     <TableContainer sx={{
