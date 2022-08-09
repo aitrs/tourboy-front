@@ -356,7 +356,7 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                     idOrg={this.props.org.idOrg}
                     idBand={this.props.idBand}
                     open={this.state.contactDialogOpen}
-                    onCancel={() => this.setState({...this.state, contactDialogOpen: false})}
+                    onCancel={() => this.setState({...this.state, contactDialogOpen: false, currentEditedContact: undefined})}
                     onSave={(contact) => {
                         if (this.state.currentEditedContact) {
                             let contacts = this.state.contacts;
