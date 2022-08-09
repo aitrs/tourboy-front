@@ -6,6 +6,7 @@ import OrgService from "../../services/OrgService";
 import { Note } from "../../types/noteapi";
 import { Contact, Org } from "../../types/orgapi";
 import { User } from "../../types/userapi";
+import { ContactDialog } from "./ContactDialog";
 import './OrgDialog.css';
 import { NoteDialog } from "./orgdialog/NoteDialog";
 
@@ -24,8 +25,10 @@ export interface OrgDialogState {
     notes: Array<Note>,
     noteDialogOpen: boolean,
     currentEditedNote?: Note,
+    currentEditedContact?: Contact,
     loaded: boolean,
     prevProps?: OrgDialogProps,
+    contactDialogOpen: boolean,
 }
 
 export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
@@ -40,6 +43,7 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
             notes: [],
             noteDialogOpen: false,
             loaded: false,
+            contactDialogOpen: false,
         };
     }
 
@@ -158,12 +162,31 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                 {this.state.contacts.map(m => {
                     return (
                         <ListItem
-                            key={m.id}
+                            key={`${m.id}listcontacts`}
                             className="memberlistitem"
                         >
                             <Chip
-                                label={`${m.first_name} ${m.name}`}
+                                onClick={(_ev) =>  {
+                                    this.setState({
+                                        ...this.state,
+                                        currentEditedContact: m,
+                                        contactDialogOpen: true,
+                                    });
+                                }}
+                                label={`${m.firstName} ${m.name}`}
                                 onDelete={(_event) => {
+                                    this._orgService.deleteContact(m.id)
+                                        .then(contact => {
+                                            let contacts = this.state.contacts;
+                                            const index = contacts.findIndex(c => c.id === contact.id);
+                                            if(index !== -1) {
+                                                contacts.splice(index, 1);
+                                                this.setState({
+                                                    ...this.state,
+                                                    contacts,
+                                                });
+                                            }
+                                        });
                                 }}
                             />
                         </ListItem>
@@ -261,8 +284,21 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
             <Card>
                 <CardHeader
                     title="Organisme"
-                />
+                >
+                </CardHeader>
                 <CardContent className="orgdialogcontent">
+                    <div
+                        style={{
+                            textAlign: 'right',
+                            marginTop: '-20px',
+                        }}
+                    >
+                        <Button
+                            onClick={this.handleCancel.bind(this)}
+                        >
+                            <Icon>cancel</Icon>
+                        </Button>
+                    </div>
                     <div className="orgdialogflextop">
                         <div className="orgfirsthalf">
                             <strong>Id:</strong><br />
@@ -286,12 +322,16 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                         </div>
                     </div>
                     <br />
+                    <Divider>Contacts</Divider>
+                    <div>
+                        {chips}
+                    </div>
                     <Divider>Notes</Divider>
                     <div>
                         {notes}
                     </div>
                     <div className="orginneractions">
-                        <Button className="orginnerbutton">
+                        <Button onClick={(_) => this.setState({...this.state, contactDialogOpen: true})} className="orginnerbutton">
                             Ajouter contact
                             <Icon>people</Icon>
                         </Button>
@@ -311,12 +351,35 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                     note={this.state.currentEditedNote}
                     key={this.state.currentEditedNote ? this.state.currentEditedNote.id : 0}
                 />
+                <ContactDialog
+                    contact={this.state.currentEditedContact}
+                    idOrg={this.props.org.idOrg}
+                    idBand={this.props.idBand}
+                    open={this.state.contactDialogOpen}
+                    onCancel={() => this.setState({...this.state, contactDialogOpen: false})}
+                    onSave={(contact) => {
+                        if (this.state.currentEditedContact) {
+                            let contacts = this.state.contacts;
+                            const index = contacts.findIndex(c => c.id === contact.id);
+                            if (index !== -1) {
+                                contacts[index] = contact;
+                                this.setState({
+                                    ...this.state,
+                                    contacts,
+                                    contactDialogOpened: false,
+                                });
+                            }
+                        } else {
+                            this.setState({
+                                ...this.state, 
+                                contacts: [...this.state.contacts, contact],
+                                contactDialogOpen: false,
+                            })
+                        }
+                    }}
+                    key={this.state.currentEditedContact ? `${this.state.currentEditedContact.id}contdial` : '0contdial'}
+                />
                 <CardActions id="bandactions">
-                    <Button
-                        onClick={this.handleCancel.bind(this)}
-                    >
-                        <Icon>cancel</Icon>
-                    </Button>
                 </CardActions>
             </Card>
         :

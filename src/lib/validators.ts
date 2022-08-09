@@ -19,7 +19,11 @@ export class ValidatorPerformer {
                 return false;
             }
         } else {
-            if (this._pattern) {
+            if (!value) {
+                return true;
+            } else if (v === '') {
+                return true;
+            } else if (this._pattern) {
                 const matches = v.match(this._pattern);
                 return matches ? matches.length > 0 : false;
             }

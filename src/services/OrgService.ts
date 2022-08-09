@@ -1,5 +1,5 @@
 import { Filter } from "../types/generic";
-import { Contact, ListResponse, Org, OrgStatus, TagRequest, TagResponse } from "../types/orgapi";
+import { Contact, ContactShort, ListResponse, Org, OrgStatus, TagRequest, TagResponse } from "../types/orgapi";
 import BaseService from "./BaseService";
 
 export default class OrgService extends BaseService {
@@ -32,15 +32,11 @@ export default class OrgService extends BaseService {
         return res;
     }
 
-    async addContact(idOrg: number, idBand: number, contact: Contact): Promise<Contact> {
-        const pcontact: Contact = {
-            ...contact,
-            id: 0,
-        };
-        const response = await fetch(`${this._api}/contact/${idOrg}/${idBand}`, {
+    async addContact(idOrg: number, idBand: number, contact: ContactShort): Promise<Contact> {
+        const response = await fetch(`${this._api}/ccontact/${idOrg}/${idBand}`, {
             method: 'POST',
             headers: this._headers,
-            body: JSON.stringify(pcontact),
+            body: JSON.stringify(contact),
             mode: 'cors',
         });
 
@@ -49,7 +45,7 @@ export default class OrgService extends BaseService {
     }
 
     async updateContact(contact: Contact): Promise<Contact> {
-        const response = await fetch(`${this._api}/contact`, {
+        const response = await fetch(`${this._api}/ucontact`, {
             method: 'PUT',
             headers: this._headers,
             body: JSON.stringify(contact),
@@ -61,7 +57,7 @@ export default class OrgService extends BaseService {
     }
 
     async deleteContact(idContact: number): Promise<Contact> {
-        const response = await fetch(`${this._api}/contact/${idContact}`, {
+        const response = await fetch(`${this._api}/dcontact/${idContact}`, {
             method: 'DELETE',
             headers: this._headers,
             mode: 'cors',

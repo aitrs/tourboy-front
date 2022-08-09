@@ -19,14 +19,24 @@ export interface Org {
 
 export interface Contact {
     id: number,
-    name: String,
-    first_name?: string,
+    name: string,
+    firstName?: string,
     email?: string,
     phone?: string,
     address?: string,
     zipCode?: string,
     city?: string,
     creationStamp: Date,
+}
+
+export interface ContactShort {
+    name: string,
+    firstName?: string,
+    email?: string,
+    phone?: string,
+    address?: string,
+    city?: string,
+    zipCode?: string,
 }
 
 export interface ListResponse {
