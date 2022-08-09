@@ -370,10 +370,12 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                                 });
                             }
                         } else {
+                            let st = this.state;
                             this.setState({
                                 ...this.state, 
                                 contacts: [...this.state.contacts, contact],
                                 contactDialogOpen: false,
+                                currentEditedContact: undefined,
                             })
                         }
                     }}
