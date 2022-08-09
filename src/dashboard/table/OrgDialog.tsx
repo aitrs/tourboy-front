@@ -363,13 +363,13 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                             const index = contacts.findIndex(c => c.id === contact.id);
                             if (index !== -1) {
                                 contacts[index] = contact;
-                                this.setState({
-                                    ...this.state,
-                                    contacts,
-                                    contactDialogOpened: false,
-                                    currentEditedContact: undefined,
-                                });
                             }
+                            this.setState({
+                                ...this.state,
+                                contacts,
+                                contactDialogOpened: false,
+                                currentEditedContact: undefined,
+                            });
                         } else {
                             let st = this.state;
                             this.setState({
