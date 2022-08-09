@@ -331,7 +331,7 @@ export class OrgDialog extends React.Component<OrgDialogProps, OrgDialogState> {
                         {notes}
                     </div>
                     <div className="orginneractions">
-                        <Button onClick={(_) => this.setState({...this.state, contactDialogOpen: true})} className="orginnerbutton">
+                        <Button onClick={(_) => this.setState({...this.state, contactDialogOpen: true, currentEditedContact: undefined})} className="orginnerbutton">
                             Ajouter contact
                             <Icon>people</Icon>
                         </Button>
