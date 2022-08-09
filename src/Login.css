@@ -6,3 +6,12 @@
     margin: auto;
     margin-top: calc(10vh);
 }
+
+.accbutton {
+    display: block;
+    flex: 1;
+}
+
+.accactions {
+    display: flex;
+}

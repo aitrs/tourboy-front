@@ -1,7 +1,8 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Dialog, FormControlLabel, TextField, Checkbox } from "@mui/material";
 import React from "react";
+import { Validators } from "../../lib/validators";
 import UserService from "../../services/UserService";
-import { FormValue } from "../../types/generic";
+import { FormValue, isFormValid, validateForm } from "../../types/generic";
 import { User } from "../../types/userapi";
 import './Dialog.css';
 
@@ -32,11 +33,16 @@ export class MemberDialog extends React.Component<MemberDialogProps, MemberDialo
                     value: '',
                     error: false,
                     errorMessage: 'Email invalide',
+                    validators: [
+                        Validators.Required,
+                        Validators.Email,
+                    ]
                 },
                 isAdmin: {
                     value: false,
                     error: false,
                     errorMessage: '',
+                    validators: [],
                 }
             },
             errorMessage: '',
@@ -73,35 +79,38 @@ export class MemberDialog extends React.Component<MemberDialogProps, MemberDialo
 
     async handleSubmit(event: any) {
         event.preventDefault();
-        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-
-        if (this.state.formValues.email.value.match(emailRegex)) {
-            const eres = await this._userService.exists(this.state.formValues.email.value);
-            if (eres.exists) {
-                await this._userService.addUserInBand(
-                    this.props.bandId,
-                    this.state.formValues.email.value,
-                    this.state.formValues.isAdmin.value,
-                );
-                this.props.onAdd(eres.user as User);
+        this.setState({
+            ...this.state,
+            formValues: validateForm(this.state.formValues),
+        }, async () => {
+            if (isFormValid(this.state.formValues)) {
+                const eres = await this._userService.exists(this.state.formValues.email.value);
+                if (eres.exists) {
+                    await this._userService.addUserInBand(
+                        this.props.bandId,
+                        this.state.formValues.email.value,
+                        this.state.formValues.isAdmin.value,
+                    );
+                    this.props.onAdd(eres.user as User);
+                } else {
+                    this.setState({
+                        ...this.state,
+                        errorMessage: `Aucun utilisateur n'a l'email ${this.state.formValues.email.value}`,
+                    });
+                }
             } else {
                 this.setState({
                     ...this.state,
-                    errorMessage: `Aucun utilisateur n'a l'email ${this.state.formValues.email.value}`,
+                    formValues: {
+                        ...this.state.formValues,
+                        email: {
+                            ...this.state.formValues.email,
+                            error: true,
+                        }
+                    }
                 });
             }
-        } else {
-            this.setState({
-                ...this.state,
-                formValues: {
-                    ...this.state.formValues,
-                    email: {
-                        ...this.state.formValues.email,
-                        error: true,
-                    }
-                }
-            });
-        }
+        });
     }
 
     async handleCancel() {

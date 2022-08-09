@@ -27,6 +27,18 @@ export interface User {
     isAdmin?: boolean,
 }
 
+export interface UserCreationRequest {
+    pseudo: string,
+    name: string,
+    firstname: string,
+    email: string,
+    pwd: string,
+}
+
+export interface UserCreationResponse {
+    id: number;
+}
+
 export interface UserExistsResponse {
     exists: boolean,
     user?: User,
@@ -35,4 +47,9 @@ export interface UserExistsResponse {
 export interface KickBandResponse {
     kicked: boolean,
     reason?: string,
+}
+
+export interface VerifyResponse {
+    id?: number,
+    verified: boolean,
 }

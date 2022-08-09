@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import React from "react";
 import NoteService from "../../../services/NoteService";
 import { FormValue } from "../../../types/generic";
@@ -35,6 +35,7 @@ export class NoteDialog extends React.Component<NoteDialogProps, NoteDialogState
                     value: this.props.note ? this.props.note.note : '',
                     error: false,
                     errorMessage: 'La note ne doit pas être vide',
+                    validators: [],
                 }
             },
             fetched: false,

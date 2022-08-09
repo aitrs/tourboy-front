@@ -31,6 +31,7 @@ export class KickDialog extends React.Component<KickDialogProps, KickDialogState
                     value: '',
                     error: false,
                     errorMessage: 'Mot de passe requis',
+                    validators: [],
                 }
             },
             errorMessage: '',

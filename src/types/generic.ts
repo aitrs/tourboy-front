@@ -1,7 +1,39 @@
+import { ValidatorPerformer } from "../lib/validators";
+
 export interface FormValue<T> {
     value: T,
     error: boolean,
     errorMessage: string,
+    validators: ValidatorPerformer[],
+}
+
+export function validateFormValue<T>(f: FormValue<T>): boolean {
+    for (let v of f.validators) {
+        if (!v.perform(f.value)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+export function validateForm(form: any): any {
+    const keys = Object.keys(form);
+    for (let field of keys) {
+        const fvalue: FormValue<string> = form[field];
+        form[field].error = !validateFormValue(fvalue);
+    }
+    return form;
+}
+
+export function isFormValid(form: any): boolean {
+    const keys = Object.keys(form);
+    for (let field of keys) {
+        if (form[field].error) {
+            return false;
+        }
+    }
+    return true;
 }
 
 export interface Filter {

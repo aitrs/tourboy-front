@@ -1,4 +1,5 @@
 import React from "react";
+import { Validators } from "../../lib/validators";
 import { FormValue } from "../../types/generic";
 
 export interface ContactDialogState {
@@ -26,36 +27,43 @@ export class ContactDialog extends React.Component<ContactDialogProps, ContactDi
                     error: false,
                     errorMessage: 'Nom requis',
                     value: '',
+                    validators: [Validators.Required],
                 },
                 firstname: {
                     error: false,
                     errorMessage: 'Prénom invalide',
                     value: '',
+                    validators: [Validators.Required],
                 },
                 email: {
                     error: false,
                     errorMessage: 'Email invalide',
                     value: '',
+                    validators: [Validators.Required],
                 },
                 phone: {
                     error: false,
                     errorMessage: 'Téléphone invalide',
                     value: '',
+                    validators: [Validators.Required],
                 },
                 address: {
                     error: false,
                     errorMessage: '',
                     value: '',
+                    validators: []
                 },
                 zipCode: {
                     error: false,
                     errorMessage: 'Code postal invalide',
                     value: '',
+                    validators: [Validators.Required],
                 },
                 city: {
                     error: false,
                     errorMessage: '',
                     value: '',
+                    validators: [],
                 }
             }
         };

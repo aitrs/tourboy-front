@@ -1,11 +1,12 @@
 import { ThemeProvider } from '@emotion/react';
-import { CssBaseline, TextareaAutosize } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import createTheme from '@mui/material/styles/createTheme';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Dashboard from './dashboard/Dashboard';
 import Login from './Login';
-import { GoogleApiProvider } from 'react-gapi';
+import { UserCreation } from './UserCreation';
+import { UserVerify } from './UserVerify';
 
 const darkTheme = createTheme({
   palette: {
@@ -23,7 +24,6 @@ function isLoggedIn(): boolean {
 
 function App(): JSX.Element {
   return (
-    <GoogleApiProvider clientId='241192926696-g95ces22pifqqa0u77lue9h6h6ct33cn.apps.googleusercontent.com'>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         <div className="App">
@@ -34,11 +34,13 @@ function App(): JSX.Element {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/privacy" element={<p>Privacy WIP</p>} />
               <Route path="/cgu" element={<p>CGU WIP</p>} />
+              <Route path="/register" element={<UserCreation />} />
+              <Route path="/verify/:id/:chain" element={<UserVerify />} />
+              <Route path="*" element={<p>Cette route n'existe pas</p>} />
             </Routes>
           </BrowserRouter>
         </div>
       </ThemeProvider>
-    </GoogleApiProvider>
   );
 }
 

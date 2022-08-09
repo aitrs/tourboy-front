@@ -8,7 +8,6 @@ import React from "react";
 import BaseService from "./services/BaseService";
 import LoginService from "./services/UserService";
 import './Login.css';
-import { GoogleLoginButton } from "ts-react-google-login-component";
 
 
 interface LoginState {
@@ -19,9 +18,6 @@ interface LoginState {
 
 export default class Login extends React.Component {
     private _loginService = new LoginService();
-    private _clientConfig = {
-        client_id: '241192926696-g95ces22pifqqa0u77lue9h6h6ct33cn.apps.googleusercontent.com',     
-    };
 
     constructor(props: Object) {
         super(props);
@@ -69,6 +65,11 @@ export default class Login extends React.Component {
         }
     }
 
+    moveToRegister() {
+        const win: Window = window;
+        win.location = '/register';
+    }
+
     render(): JSX.Element {
         return(
             <form onSubmit={this.submit.bind(this)}>
@@ -84,16 +85,13 @@ export default class Login extends React.Component {
                         <TextField id='pwd' label='Password' variant='outlined' type='password' onChange={this.pwdChange.bind(this)}/>
                         <br />
                     </CardContent>
-                    <CardActions id="actions">
-                        <Button type="submit">
+                    <CardActions className="accactions">
+                        <Button className="accbutton" type="submit">
                             Login
                         </Button>
-                        <br />
-                        <GoogleLoginButton 
-                            clientConfig={this._clientConfig}
-                            responseHandler={this.googleResponse.bind(this)}
-                            failureHandler={(e) => { console.error(e); }}
-                        />
+                        <Button onClick={this.moveToRegister} className="accbutton" type="button">
+                            S'inscrire
+                        </Button>
                     </CardActions>
                 </Card>
             </form>

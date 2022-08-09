@@ -1,9 +1,39 @@
-import { Band, KickBandResponse, LoginResponse, UserExistsResponse } from "../types/userapi";
+import { Band, KickBandResponse, LoginResponse, UserCreationRequest, UserCreationResponse, UserExistsResponse, VerifyResponse } from "../types/userapi";
 import BaseService from "./BaseService";
 
 export default class LoginService extends BaseService {
     private _api: string = '/api/user';
 
+    async register(req: UserCreationRequest): Promise<UserCreationResponse> {
+        const response = await fetch(`${this._api}/register`, {
+            method: 'POST',
+            headers: this._headers,
+            body: JSON.stringify(req),
+            mode: 'cors',
+        });
+        const res = await response.json();
+
+        if (res.code) {
+            if (res.code === "417 Expectation Failed") {
+                throw 'Il semblerait que ce mail existe déjà :(';
+            } else {
+                throw res.code;
+            }
+        }
+
+        return res as UserCreationResponse;
+    }
+
+    async verify(id: number, chain: string): Promise<VerifyResponse> {
+        const response = await fetch(`${this._api}/verify/${id}/${chain}`, {
+            method: 'GET',
+            headers: this._headers,
+            mode: 'cors',
+        });
+
+        let res: VerifyResponse = await response.json();
+        return res;
+    }
 
     async login(email: string, pwd: string): Promise<LoginResponse> {
         const response = await fetch(`${this._api}/login`, {

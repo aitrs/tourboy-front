@@ -27,6 +27,7 @@ export class BandDialog extends React.Component<BandDialogProps, BandDialogState
                     value: '',
                     error: false,
                     errorMessage: 'Le nom ne peut pas être vide',
+                    validators: [],
                 }
             },
         };
