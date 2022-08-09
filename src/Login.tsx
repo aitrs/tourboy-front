@@ -8,6 +8,7 @@ import React from "react";
 import BaseService from "./services/BaseService";
 import LoginService from "./services/UserService";
 import './Login.css';
+import { Link } from "react-router-dom";
 
 
 interface LoginState {
@@ -84,6 +85,7 @@ export default class Login extends React.Component {
                         <br />
                         <TextField id='pwd' label='Password' variant='outlined' type='password' onChange={this.pwdChange.bind(this)}/>
                         <br />
+                        <Link to="/forgot">Mot de passe oublié</Link> 
                     </CardContent>
                     <CardActions className="accactions">
                         <Button className="accbutton" type="submit">

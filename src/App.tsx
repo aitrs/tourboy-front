@@ -6,6 +6,8 @@ import './App.css';
 import Dashboard from './dashboard/Dashboard';
 import Login from './Login';
 import { UserCreation } from './UserCreation';
+import { UserForgot } from './UserForgot';
+import { UserForgotRequest } from './UserForgotRequest';
 import { UserVerify } from './UserVerify';
 
 const darkTheme = createTheme({
@@ -36,6 +38,8 @@ function App(): JSX.Element {
               <Route path="/cgu" element={<p>CGU WIP</p>} />
               <Route path="/register" element={<UserCreation />} />
               <Route path="/verify/:id/:chain" element={<UserVerify />} />
+              <Route path="/forgot" element={<UserForgotRequest />} />
+              <Route path="/forgotpassword/:id/:chain" element={<UserForgot />} />
               <Route path="*" element={<p>Cette route n'existe pas</p>} />
             </Routes>
           </BrowserRouter>

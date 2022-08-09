@@ -53,3 +53,13 @@ export interface VerifyResponse {
     id?: number,
     verified: boolean,
 }
+
+export interface ForgotPasswordRequest {
+    email: string;
+}
+
+export interface ForgotPasswordModRequest {
+    id: number,
+    pwd: string,
+    chain: string,
+}

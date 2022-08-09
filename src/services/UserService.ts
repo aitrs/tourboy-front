@@ -1,4 +1,4 @@
-import { Band, KickBandResponse, LoginResponse, UserCreationRequest, UserCreationResponse, UserExistsResponse, VerifyResponse } from "../types/userapi";
+import { Band, ForgotPasswordModRequest, ForgotPasswordRequest, KickBandResponse, LoginResponse, UserCreationRequest, UserCreationResponse, UserExistsResponse, VerifyResponse } from "../types/userapi";
 import BaseService from "./BaseService";
 
 export default class LoginService extends BaseService {
@@ -101,6 +101,30 @@ export default class LoginService extends BaseService {
         });
 
         let res: KickBandResponse = await response.json();
+        return res;
+    }
+
+    async forgotPasswordRequest(req: ForgotPasswordRequest): Promise<VerifyResponse> {
+        const response = await fetch(`${this._api}/forgotrequest`, {
+            method: 'POST',
+            headers: this._headers,
+            mode: 'cors',
+            body: JSON.stringify(req),
+        });
+
+        let res: VerifyResponse = await response.json();
+        return res;
+    }
+
+    async changePassword(req: ForgotPasswordModRequest): Promise<VerifyResponse> {
+        const response = await fetch(`${this._api}/forgotverify`, {
+            method: 'POST',
+            headers: this._headers,
+            mode: 'cors',
+            body: JSON.stringify(req),   
+        });
+
+        let res: VerifyResponse = await response.json();
         return res;
     }
 }
