@@ -96,6 +96,9 @@ export default class Login extends React.Component {
                         </Button>
                     </CardActions>
                 </Card>
+                <p>
+                    <a href="https://github.com/aitrs/tourboy-front/issues/new">Je rencontre un bug</a>
+                </p>
             </form>
         )
     }

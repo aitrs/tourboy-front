@@ -169,6 +169,9 @@ export default class Dashboard extends React.Component<{}, DashboardState> {
                         />
                     </div>
                     <OrgTable bandUsers={this.state.currentMembers} idBand={this.state.selected?.id} bandAdmins={this.state.bandAdmin} />
+                    <p>
+                        <a href="https://github.com/aitrs/tourboy-front/issues/new">Je rencontre un bug</a>
+                    </p>
                 </div> 
             );
         } else {
