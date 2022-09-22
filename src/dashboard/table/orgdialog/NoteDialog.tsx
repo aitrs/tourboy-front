@@ -1,42 +1,52 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+} from "@mui/material";
 import React from "react";
 import NoteService from "../../../services/NoteService";
 import { FormValue } from "../../../types/generic";
 import { Note } from "../../../types/noteapi";
 
 export interface NoteDialogProps {
-    idBand: number,
-    idActivity: number,
-    open: boolean,
-    onCancel:() => void,
-    onSave:(note: Note) => void,
-    onEdit:(note: Note) => void,
-    note?: Note,
+    idBand: number;
+    idActivity: number;
+    open: boolean;
+    onCancel: () => void;
+    onSave: (note: Note) => void;
+    onEdit: (note: Note) => void;
+    note?: Note;
 }
 
 export interface FormValues {
-    note: FormValue<string>,
+    note: FormValue<string>;
 }
 
 export interface NoteDialogState {
-    formValues: FormValues,
-    saveId?: number,
-    prevProps?: NoteDialogProps,
-    fetched: boolean,
+    formValues: FormValues;
+    saveId?: number;
+    prevProps?: NoteDialogProps;
+    fetched: boolean;
 }
 
-export class NoteDialog extends React.Component<NoteDialogProps, NoteDialogState> {
+export class NoteDialog extends React.Component<
+    NoteDialogProps,
+    NoteDialogState
+> {
     private _noteService = new NoteService();
     constructor(props: NoteDialogProps) {
         super(props);
         this.state = {
             formValues: {
                 note: {
-                    value: this.props.note ? this.props.note.note : '',
+                    value: this.props.note ? this.props.note.note : "",
                     error: false,
-                    errorMessage: 'La note ne doit pas être vide',
+                    errorMessage: "La note ne doit pas être vide",
                     validators: [],
-                }
+                },
             },
             fetched: false,
         };
@@ -44,31 +54,36 @@ export class NoteDialog extends React.Component<NoteDialogProps, NoteDialogState
 
     async handleSubmit(event: any) {
         event.preventDefault();
-        if (this.state.formValues.note.value === '') {
+        if (this.state.formValues.note.value === "") {
             this.setState({
                 ...this.state,
                 formValues: {
                     note: {
                         ...this.state.formValues.note,
                         error: true,
-                    }
-                }
+                    },
+                },
             });
         } else {
             if (this.state.saveId) {
-                this._noteService.editNote(this.state.saveId, this.state.formValues.note.value)
-                    .then(updated => {
+                this._noteService
+                    .editNote(
+                        this.state.saveId,
+                        this.state.formValues.note.value
+                    )
+                    .then((updated) => {
                         this.props.onEdit(updated);
                     });
             } else {
-                this._noteService.createNote(
-                    this.props.idBand,
-                    this.props.idActivity,
-                    this.state.formValues.note.value,
-                ).then(newnote => {
-                    this.props.onSave(newnote);
-                });
-
+                this._noteService
+                    .createNote(
+                        this.props.idBand,
+                        this.props.idActivity,
+                        this.state.formValues.note.value
+                    )
+                    .then((newnote) => {
+                        this.props.onSave(newnote);
+                    });
             }
         }
     }
@@ -104,43 +119,40 @@ export class NoteDialog extends React.Component<NoteDialogProps, NoteDialogState
                 note: {
                     ...this.state.formValues.note,
                     value,
-                }
-            }
+                },
+            },
         });
     }
 
     render(): JSX.Element {
-        return(
-            <Dialog
-                open={this.props.open}
-            >
+        return (
+            <Dialog open={this.props.open}>
                 <form onSubmit={this.handleSubmit.bind(this)}>
-                        <DialogTitle>{"Note"}</DialogTitle>
-                        <DialogContent
-                            style={{ height: '31vh', width: '20vw'}}
+                    <DialogTitle>{"Note"}</DialogTitle>
+                    <DialogContent style={{ height: "31vh", width: "20vw" }}>
+                        <TextField
+                            id="note"
+                            label="Note"
+                            variant="outlined"
+                            multiline
+                            fullWidth
+                            rows={10}
+                            value={this.state.formValues.note.value}
+                            required
+                            onChange={this.handleChange.bind(this)}
+                        />
+                    </DialogContent>
+                    <DialogActions className="dialogactions">
+                        <Button type="submit">Sauvegarder</Button>
+                        <Button
+                            type="button"
+                            onClick={this.handleCancel.bind(this)}
                         >
-                            <TextField
-                                id="note"
-                                label="Note"
-                                variant="outlined"
-                                multiline
-                                fullWidth
-                                rows={10}
-                                value={this.state.formValues.note.value}
-                                required
-                                onChange={this.handleChange.bind(this)}
-                            />
-                        </DialogContent>
-                        <DialogActions className="dialogactions">
-                            <Button type="submit">
-                                Sauvegarder  
-                            </Button> 
-                            <Button type="button" onClick={this.handleCancel.bind(this)}>
-                                Annuler
-                            </Button>
-                        </DialogActions>
+                            Annuler
+                        </Button>
+                    </DialogActions>
                 </form>
             </Dialog>
-        )
+        );
     }
 }

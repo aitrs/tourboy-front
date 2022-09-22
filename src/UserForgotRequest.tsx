@@ -1,4 +1,10 @@
-import { Button, Card, CardActions, CardContent, TextField } from "@mui/material";
+import {
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    TextField,
+} from "@mui/material";
 import { display } from "@mui/system";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -11,62 +17,57 @@ export function UserForgotRequest(): JSX.Element {
     const userService = new UserService();
     const [resp, setResp] = useState<VerifyResponse>();
     const [email, setEmail] = useState<FormValue<string>>({
-        value: '',
+        value: "",
         error: false,
-        errorMessage: 'Email invalide',
-        validators: [
-            Validators.Required,
-            Validators.Email,
-        ]
+        errorMessage: "Email invalide",
+        validators: [Validators.Required, Validators.Email],
     });
 
-    return(
-        resp ? 
-            resp.id ? 
+    return resp ? (
+        resp.id ? (
             <Card>
                 <CardContent>
                     <p>
-                        Un email contenant un lien pour réinitialiser Votre
-                        mot de passe a été envoyé sur votre addresse.
+                        Un email contenant un lien pour réinitialiser Votre mot
+                        de passe a été envoyé sur votre addresse.
                     </p>
-                    <p>
-                        Veuillez vérifier vos mails.
-                    </p>
+                    <p>Veuillez vérifier vos mails.</p>
                     <Link to="/login">Accueil</Link>
                 </CardContent>
             </Card>
-            :
+        ) : (
             <Card>
                 <CardContent>
                     <p>
-                        Impossible de trouver un utilisateur valide 
-                        utilisant ce mot de passe.
+                        Impossible de trouver un utilisateur valide utilisant ce
+                        mot de passe.
                     </p>
-                    <p>
-                        Veuillez rééssayer ultérieurement 
-                    </p>
+                    <p>Veuillez rééssayer ultérieurement</p>
                     <Link to="/login">Accueil</Link>
                 </CardContent>
             </Card>
-        :
-        <form onSubmit={(event) => {
-            event.preventDefault();
-            const form = {
-                email: email,
-            };
-            if (isFormValid(form)) {
-                userService.forgotPasswordRequest({
-                    email: email.value,
-                }).then(resp => {
-                    setResp(resp);
-                });
-            }
-        }}>
+        )
+    ) : (
+        <form
+            onSubmit={(event) => {
+                event.preventDefault();
+                const form = {
+                    email: email,
+                };
+                if (isFormValid(form)) {
+                    userService
+                        .forgotPasswordRequest({
+                            email: email.value,
+                        })
+                        .then((resp) => {
+                            setResp(resp);
+                        });
+                }
+            }}
+        >
             <Card>
                 <CardContent>
-                    <div>
-                        Veuillez saisir votre adresse Email
-                    </div>
+                    <div>Veuillez saisir votre adresse Email</div>
                     <br />
                     <div>
                         <TextField
@@ -83,22 +84,24 @@ export function UserForgotRequest(): JSX.Element {
                                 setEmail({
                                     ...email,
                                     error: !validateFormValue(email),
-                                })
+                                });
                             }}
                         />
                     </div>
                 </CardContent>
                 <CardActions>
-                    <Button sx={{
-                            display: 'block',
-                            width: '100px',
-                            margin: 'auto',
+                    <Button
+                        sx={{
+                            display: "block",
+                            width: "100px",
+                            margin: "auto",
                         }}
-                        type="submit">
+                        type="submit"
+                    >
                         Envoyer
                     </Button>
                 </CardActions>
             </Card>
         </form>
-    )
+    );
 }

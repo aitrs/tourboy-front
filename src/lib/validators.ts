@@ -14,20 +14,19 @@ export class ValidatorPerformer {
         let v = `${value}`;
         if (this._required) {
             if (value) {
-                return (v !== '');
+                return v !== "";
             } else {
                 return false;
             }
         } else {
             if (!value) {
                 return true;
-            } else if (v === '') {
+            } else if (v === "") {
                 return true;
             } else if (this._pattern) {
                 const matches = v.match(this._pattern);
                 return matches ? matches.length > 0 : false;
-            }
-            else return true;
+            } else return true;
         }
     }
 }
@@ -42,6 +41,8 @@ export class Validators {
     }
 
     static get Email() {
-        return this.Pattern(/^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/);
+        return this.Pattern(
+            /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/
+        );
     }
 }

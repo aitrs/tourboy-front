@@ -1,4 +1,11 @@
-import { Button, Card, CardActions, CardContent, CardHeader, TextField } from "@mui/material";
+import {
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    CardHeader,
+    TextField,
+} from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -11,41 +18,44 @@ export function UserForgot(): JSX.Element {
     const { id, chain } = useParams();
     const [resp, setResp] = useState<VerifyResponse>();
     const [pwd, setPwd] = useState<FormValue<string>>({
-        value: '',
+        value: "",
         error: false,
-        errorMessage: 'Champ requis',
+        errorMessage: "Champ requis",
         validators: [Validators.Required],
     });
     const [pwdv, setPwdv] = useState<FormValue<string>>({
-        value: '',
+        value: "",
         error: false,
-        errorMessage: 'Champ requis',
+        errorMessage: "Champ requis",
         validators: [Validators.Required],
     });
     const [mismatchMessage, setMismatch] = useState<string>();
     const userService = new UserService();
 
-    return (
-        resp ?
-            resp.id && resp.verified ?
+    return resp ? (
+        resp.id && resp.verified ? (
             <Card>
                 <CardContent>
+                    <p>Votre mot de passe a été modifié avec succès</p>
                     <p>
-                        Votre mot de passe a été modifié avec succès
-                    </p>
-                    <p>
-                        Vous pouvez à présent vous <Link to="/login">connecter</Link>
+                        Vous pouvez à présent vous{" "}
+                        <Link to="/login">connecter</Link>
                     </p>
                 </CardContent>
             </Card>
-            :
+        ) : (
             <Card>
                 <CardContent>
                     <p>Une erreur est survenue</p>
-                    <p>Veuillez <a href="mailto:dorian.vuolo@gmail.com">contacter</a> l'administrateur de ce site </p>
+                    <p>
+                        Veuillez{" "}
+                        <a href="mailto:dorian.vuolo@gmail.com">contacter</a>{" "}
+                        l'administrateur de ce site{" "}
+                    </p>
                 </CardContent>
             </Card>
-        :
+        )
+    ) : (
         <form
             onSubmit={(event) => {
                 event.preventDefault();
@@ -58,13 +68,17 @@ export function UserForgot(): JSX.Element {
                     const nid = Number.parseInt(id);
                     if (nid) {
                         if (pwd.value === pwdv.value) {
-                            userService.changePassword({
-                                id: nid,
-                                chain: chain,
-                                pwd: pwd.value
-                            }).then(response => setResp(response));
+                            userService
+                                .changePassword({
+                                    id: nid,
+                                    chain: chain,
+                                    pwd: pwd.value,
+                                })
+                                .then((response) => setResp(response));
                         } else {
-                            setMismatch('Les mots de passe ne sont pas identiques');
+                            setMismatch(
+                                "Les mots de passe ne sont pas identiques"
+                            );
                         }
                     }
                 }
@@ -79,11 +93,13 @@ export function UserForgot(): JSX.Element {
                         variant="outlined"
                         error={pwd.error}
                         type="password"
-                        helperText={pwd.error ? pwd.errorMessage:''}
-                        onChange={(event) => setPwd({
-                            ...pwd,
-                            value: event.target.value,
-                        })}
+                        helperText={pwd.error ? pwd.errorMessage : ""}
+                        onChange={(event) =>
+                            setPwd({
+                                ...pwd,
+                                value: event.target.value,
+                            })
+                        }
                         onBlur={(_e) => {
                             setPwd({
                                 ...pwd,
@@ -99,11 +115,13 @@ export function UserForgot(): JSX.Element {
                         variant="outlined"
                         type="password"
                         error={pwdv.error}
-                        helperText={pwdv.error ? pwdv.errorMessage : ''}
-                        onChange={(event) => setPwdv({
-                            ...pwdv,
-                            value: event.target.value,
-                        })}
+                        helperText={pwdv.error ? pwdv.errorMessage : ""}
+                        onChange={(event) =>
+                            setPwdv({
+                                ...pwdv,
+                                value: event.target.value,
+                            })
+                        }
                         onBlur={(_e) => {
                             setPwdv({
                                 ...pwdv,
@@ -119,14 +137,15 @@ export function UserForgot(): JSX.Element {
                     <Button
                         type="submit"
                         sx={{
-                            display: 'block',
-                            width: '100px',
-                            margin: 'auto',
-                        }}>
+                            display: "block",
+                            width: "100px",
+                            margin: "auto",
+                        }}
+                    >
                         Envoyer
                     </Button>
                 </CardActions>
             </Card>
         </form>
-    )
+    );
 }

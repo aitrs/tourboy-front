@@ -1,17 +1,17 @@
 import { User } from "./userapi";
 
 export interface BandCreateRequest {
-    name: string,
+    name: string;
 }
 
 export interface BandCreateResponse {
-    id: number,
+    id: number;
 }
 
 export interface BandMembersResponse {
-    members: Array<User>,
+    members: Array<User>;
 }
 
 export interface BandIsAdminResponse {
-    isAdmin: boolean,
+    isAdmin: boolean;
 }

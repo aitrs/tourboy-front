@@ -6,36 +6,36 @@ export default class BaseService {
 
     protected get _headers(): Headers {
         let headers = new Headers();
-        const jwt = localStorage.getItem('jwt');
+        const jwt = localStorage.getItem("jwt");
         if (jwt) {
-            const decode = require('jwt-claims');
+            const decode = require("jwt-claims");
             this._claims = decode(jwt);
-            headers.append('Authorization', `Bearer ${jwt}`);
+            headers.append("Authorization", `Bearer ${jwt}`);
         }
-        headers.append('Content-Type', 'application/json');
-        
-        return headers
+        headers.append("Content-Type", "application/json");
+
+        return headers;
     }
 
     protected _genHeaders(filters: Array<Filter>): Headers {
         let headers = this._headers;
-        headers.append('filters', JSON.stringify(filters));
+        headers.append("filters", JSON.stringify(filters));
         return headers;
     }
 
     static set jwt(jwt: string) {
-        localStorage.setItem('jwt', jwt);
+        localStorage.setItem("jwt", jwt);
     }
 
     static get token(): string | null {
-        return localStorage.getItem('jwt');
+        return localStorage.getItem("jwt");
     }
 
     static get isJwtExpired(): boolean {
-        const jwt = localStorage.getItem('jwt');
+        const jwt = localStorage.getItem("jwt");
 
         if (jwt) {
-            const decode = require('jwt-claims');
+            const decode = require("jwt-claims");
             const claims: Claims = decode(jwt);
             const now = Date.now() / 1000;
 
@@ -46,7 +46,7 @@ export default class BaseService {
     }
 
     static removeJwt() {
-        localStorage.removeItem('jwt');
+        localStorage.removeItem("jwt");
     }
 
     get userId(): number | undefined {

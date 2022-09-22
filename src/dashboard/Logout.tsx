@@ -3,8 +3,7 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import BaseService from "../services/BaseService";
 
-export default class Logout extends React.Component{
-
+export default class Logout extends React.Component {
     constructor(props: any) {
         super(props);
     }
@@ -12,12 +11,10 @@ export default class Logout extends React.Component{
     click() {
         BaseService.removeJwt();
         const win: Window = window;
-        win.location = '/';
+        win.location = "/";
     }
 
     render(): JSX.Element {
-        return(
-            <Button onClick={this.click.bind(this)}>Logout</Button>
-        )
+        return <Button onClick={this.click.bind(this)}>Logout</Button>;
     }
 }

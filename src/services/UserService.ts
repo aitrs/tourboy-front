@@ -1,21 +1,31 @@
-import { Band, ForgotPasswordModRequest, ForgotPasswordRequest, KickBandResponse, LoginResponse, UserCreationRequest, UserCreationResponse, UserExistsResponse, VerifyResponse } from "../types/userapi";
+import {
+    Band,
+    ForgotPasswordModRequest,
+    ForgotPasswordRequest,
+    KickBandResponse,
+    LoginResponse,
+    UserCreationRequest,
+    UserCreationResponse,
+    UserExistsResponse,
+    VerifyResponse,
+} from "../types/userapi";
 import BaseService from "./BaseService";
 
 export default class LoginService extends BaseService {
-    private _api: string = '/api/user';
+    private _api: string = "/api/user";
 
     async register(req: UserCreationRequest): Promise<UserCreationResponse> {
         const response = await fetch(`${this._api}/register`, {
-            method: 'POST',
+            method: "POST",
             headers: this._headers,
             body: JSON.stringify(req),
-            mode: 'cors',
+            mode: "cors",
         });
         const res = await response.json();
 
         if (res.code) {
             if (res.code === "417 Expectation Failed") {
-                throw 'Il semblerait que ce mail existe déjà :(';
+                throw "Il semblerait que ce mail existe déjà :(";
             } else {
                 throw res.code;
             }
@@ -26,9 +36,9 @@ export default class LoginService extends BaseService {
 
     async verify(id: number, chain: string): Promise<VerifyResponse> {
         const response = await fetch(`${this._api}/verify/${id}/${chain}`, {
-            method: 'GET',
+            method: "GET",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
         });
 
         let res: VerifyResponse = await response.json();
@@ -37,13 +47,13 @@ export default class LoginService extends BaseService {
 
     async login(email: string, pwd: string): Promise<LoginResponse> {
         const response = await fetch(`${this._api}/login`, {
-            method: 'POST',
+            method: "POST",
             headers: this._headers,
             body: JSON.stringify({
                 email,
                 pwd,
             }),
-            mode: 'cors',
+            mode: "cors",
         });
 
         let res: LoginResponse = await response.json();
@@ -52,9 +62,9 @@ export default class LoginService extends BaseService {
 
     async getBands(): Promise<Array<Band>> {
         const response = await fetch(`${this._api}/bands`, {
-            method: 'GET',
+            method: "GET",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
         });
 
         let res: Array<Band> = await response.json();
@@ -63,9 +73,9 @@ export default class LoginService extends BaseService {
 
     async exists(email: string): Promise<UserExistsResponse> {
         const response = await fetch(`${this._api}/exists/${email}`, {
-            method: 'GET',
+            method: "GET",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
         });
 
         let res: UserExistsResponse = await response.json();
@@ -73,14 +83,18 @@ export default class LoginService extends BaseService {
         return res;
     }
 
-    async addUserInBand(idBand: number, email: String, administrator: boolean): Promise<null> {
+    async addUserInBand(
+        idBand: number,
+        email: String,
+        administrator: boolean
+    ): Promise<null> {
         const response = await fetch(`${this._api}/addband`, {
-            method: 'PATCH',
+            method: "PATCH",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
             body: JSON.stringify({
                 email,
-                idBand, 
+                idBand,
                 administrator,
             }),
         });
@@ -88,27 +102,33 @@ export default class LoginService extends BaseService {
         return null;
     }
 
-    async kickUserFromBand(idBand: number, idUser: number, pwd: string): Promise<KickBandResponse> {
+    async kickUserFromBand(
+        idBand: number,
+        idUser: number,
+        pwd: string
+    ): Promise<KickBandResponse> {
         const response = await fetch(`${this._api}/kick`, {
-            method: 'PATCH',
+            method: "PATCH",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
             body: JSON.stringify({
                 idUser,
                 idBand,
-                pwd
-            })
+                pwd,
+            }),
         });
 
         let res: KickBandResponse = await response.json();
         return res;
     }
 
-    async forgotPasswordRequest(req: ForgotPasswordRequest): Promise<VerifyResponse> {
+    async forgotPasswordRequest(
+        req: ForgotPasswordRequest
+    ): Promise<VerifyResponse> {
         const response = await fetch(`${this._api}/forgotrequest`, {
-            method: 'POST',
+            method: "POST",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
             body: JSON.stringify(req),
         });
 
@@ -116,12 +136,14 @@ export default class LoginService extends BaseService {
         return res;
     }
 
-    async changePassword(req: ForgotPasswordModRequest): Promise<VerifyResponse> {
+    async changePassword(
+        req: ForgotPasswordModRequest
+    ): Promise<VerifyResponse> {
         const response = await fetch(`${this._api}/forgotverify`, {
-            method: 'POST',
+            method: "POST",
             headers: this._headers,
-            mode: 'cors',
-            body: JSON.stringify(req),   
+            mode: "cors",
+            body: JSON.stringify(req),
         });
 
         let res: VerifyResponse = await response.json();

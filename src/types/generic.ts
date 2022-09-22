@@ -1,10 +1,11 @@
+import { useEffect, useRef } from "react";
 import { ValidatorPerformer } from "../lib/validators";
 
 export interface FormValue<T> {
-    value: T,
-    error: boolean,
-    errorMessage: string,
-    validators: ValidatorPerformer[],
+    value: T;
+    error: boolean;
+    errorMessage: string;
+    validators: ValidatorPerformer[];
 }
 
 export function validateFormValue<T>(f: FormValue<T>): boolean {
@@ -37,17 +38,25 @@ export function isFormValid(form: any): boolean {
 }
 
 export interface Filter {
-    key: string,
-    alias?: string,
-    op: 'like' | 'exact',
-    filterType: 'numeric' | 'string',
-    value: string,
-    likeStart: boolean,
+    key: string;
+    alias?: string;
+    op: "like" | "exact";
+    filterType: "numeric" | "string";
+    value: string;
+    likeStart: boolean;
 }
 
 export interface Paginator {
-    page: number,
-    size: number,
-    pageCount?: number,
-    itemCount?: number,
+    page: number;
+    size: number;
+    pageCount?: number;
+    itemCount?: number;
+}
+
+export function usePrevious<T>(prev: T): T {
+    const ref = useRef<T>(prev);
+    useEffect(() => {
+        ref.current = prev;
+    });
+    return ref.current;
 }

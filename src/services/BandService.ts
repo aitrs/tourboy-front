@@ -1,42 +1,46 @@
-import { BandCreateResponse, BandIsAdminResponse, BandMembersResponse } from "../types/bandapi";
+import {
+    BandCreateResponse,
+    BandIsAdminResponse,
+    BandMembersResponse,
+} from "../types/bandapi";
 import { User } from "../types/userapi";
 import BaseService from "./BaseService";
 
 export default class BandService extends BaseService {
-    private _api = '/api/band';
+    private _api = "/api/band";
 
     async createBand(name: string): Promise<BandCreateResponse> {
-        const response = await fetch(`${this._api}/add`,{
-            method: 'POST',
+        const response = await fetch(`${this._api}/add`, {
+            method: "POST",
             headers: this._headers,
             body: JSON.stringify({
                 name,
             }),
-            mode: 'cors',
+            mode: "cors",
         });
 
         let res: BandCreateResponse = await response.json();
         return res;
     }
 
-    async updateBand(name: string, id: number): Promise<null>{
+    async updateBand(name: string, id: number): Promise<null> {
         await fetch(`${this._api}/upd/${id}`, {
-            method: 'PUT',
+            method: "PUT",
             headers: this._headers,
             body: JSON.stringify({
                 name,
             }),
-            mode: 'cors',
+            mode: "cors",
         });
 
-        return null;        
+        return null;
     }
 
     async members(id: number): Promise<BandMembersResponse> {
         const response = await fetch(`${this._api}/members/${id}`, {
-            method: 'GET',
+            method: "GET",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
         });
 
         const res: BandMembersResponse = await response.json();
@@ -46,9 +50,9 @@ export default class BandService extends BaseService {
 
     async isAdmin(idBand: number): Promise<BandIsAdminResponse> {
         const response = await fetch(`${this._api}/isadmin/${idBand}`, {
-            method: 'GET',
+            method: "GET",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
         });
 
         const res: BandIsAdminResponse = await response.json();
@@ -58,13 +62,12 @@ export default class BandService extends BaseService {
 
     async admins(idBand: number): Promise<Array<User>> {
         const response = await fetch(`${this._api}/admins/${idBand}`, {
-            method: 'GET',
+            method: "GET",
             headers: this._headers,
-            mode: 'cors',
+            mode: "cors",
         });
 
         const res: Array<User> = await response.json();
         return res;
     }
-
 }

@@ -2,19 +2,23 @@ import { Note, NoteCreateRequest, NoteUpdateRequest } from "../types/noteapi";
 import BaseService from "./BaseService";
 
 export default class NoteService extends BaseService {
-    private _api = '/api/note';
+    private _api = "/api/note";
 
-    async createNote(idBand: number, idActivity: number, note: string): Promise<Note> {
+    async createNote(
+        idBand: number,
+        idActivity: number,
+        note: string
+    ): Promise<Note> {
         const request: NoteCreateRequest = {
             idActivity,
             idBand,
             note,
         };
         const response = await fetch(`${this._api}/create`, {
-            method: 'POST',
+            method: "POST",
             headers: this._headers,
             body: JSON.stringify(request),
-            mode: 'cors',
+            mode: "cors",
         });
 
         let res: Note = await response.json();
@@ -27,10 +31,10 @@ export default class NoteService extends BaseService {
             note,
         };
         const response = await fetch(`${this._api}/edit`, {
-            method: 'PUT',
+            method: "PUT",
             headers: this._headers,
             body: JSON.stringify(request),
-            mode: 'cors',
+            mode: "cors",
         });
 
         let res: Note = await response.json();
@@ -39,9 +43,9 @@ export default class NoteService extends BaseService {
 
     async deleteNote(id: number, idBand: number): Promise<Note> {
         const response = await fetch(`${this._api}/delete/${id}/${idBand}`, {
-            method: 'DELETE',
+            method: "DELETE",
             headers: this._headers,
-            mode: 'cors'
+            mode: "cors",
         });
 
         let res: Note = await response.json();
@@ -49,11 +53,14 @@ export default class NoteService extends BaseService {
     }
 
     async readNotes(idActivity: number, idBand: number): Promise<Array<Note>> {
-        const response = await fetch(`${this._api}/all/${idActivity}/${idBand}`, {
-            method: 'GET',
-            headers: this._headers,
-            mode: 'cors',
-        });
+        const response = await fetch(
+            `${this._api}/all/${idActivity}/${idBand}`,
+            {
+                method: "GET",
+                headers: this._headers,
+                mode: "cors",
+            }
+        );
 
         let res: Array<Note> = await response.json();
         return res;

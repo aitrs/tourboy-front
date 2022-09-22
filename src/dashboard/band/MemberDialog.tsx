@@ -1,52 +1,62 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Dialog, FormControlLabel, TextField, Checkbox } from "@mui/material";
+import {
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    CardHeader,
+    Dialog,
+    FormControlLabel,
+    TextField,
+    Checkbox,
+} from "@mui/material";
 import React from "react";
 import { Validators } from "../../lib/validators";
 import UserService from "../../services/UserService";
 import { FormValue, isFormValid, validateForm } from "../../types/generic";
 import { User } from "../../types/userapi";
-import './Dialog.css';
+import "./Dialog.css";
 
 export interface MemberDialogProps {
-    bandId: number,
-    open: boolean,
-    onAdd: (user: User) => void,
-    onCancel: () => void,
+    bandId: number;
+    open: boolean;
+    onAdd: (user: User) => void;
+    onCancel: () => void;
 }
 
 interface FormValues {
-    email: FormValue<string>,
-    isAdmin: FormValue<boolean>,
+    email: FormValue<string>;
+    isAdmin: FormValue<boolean>;
 }
 
 export interface MemberDialogState {
-    formValues: FormValues,
-    errorMessage: string,
+    formValues: FormValues;
+    errorMessage: string;
 }
 
-export class MemberDialog extends React.Component<MemberDialogProps, MemberDialogState> {
+export class MemberDialog extends React.Component<
+    MemberDialogProps,
+    MemberDialogState
+> {
     private _userService = new UserService();
     constructor(props: MemberDialogProps) {
         super(props);
         this.state = {
             formValues: {
                 email: {
-                    value: '',
+                    value: "",
                     error: false,
-                    errorMessage: 'Email invalide',
-                    validators: [
-                        Validators.Required,
-                        Validators.Email,
-                    ]
+                    errorMessage: "Email invalide",
+                    validators: [Validators.Required, Validators.Email],
                 },
                 isAdmin: {
                     value: false,
                     error: false,
-                    errorMessage: '',
+                    errorMessage: "",
                     validators: [],
-                }
+                },
             },
-            errorMessage: '',
-        }
+            errorMessage: "",
+        };
     }
 
     async handleEmailChange(event: any) {
@@ -58,8 +68,8 @@ export class MemberDialog extends React.Component<MemberDialogProps, MemberDialo
                 email: {
                     ...this.state.formValues.email,
                     value,
-                }
-            }
+                },
+            },
         });
     }
 
@@ -72,45 +82,50 @@ export class MemberDialog extends React.Component<MemberDialogProps, MemberDialo
                 isAdmin: {
                     ...this.state.formValues.isAdmin,
                     value,
-                }
-            }
+                },
+            },
         });
     }
 
     async handleSubmit(event: any) {
         event.preventDefault();
-        this.setState({
-            ...this.state,
-            formValues: validateForm(this.state.formValues),
-        }, async () => {
-            if (isFormValid(this.state.formValues)) {
-                const eres = await this._userService.exists(this.state.formValues.email.value);
-                if (eres.exists) {
-                    await this._userService.addUserInBand(
-                        this.props.bandId,
-                        this.state.formValues.email.value,
-                        this.state.formValues.isAdmin.value,
+        this.setState(
+            {
+                ...this.state,
+                formValues: validateForm(this.state.formValues),
+            },
+            async () => {
+                if (isFormValid(this.state.formValues)) {
+                    const eres = await this._userService.exists(
+                        this.state.formValues.email.value
                     );
-                    this.props.onAdd(eres.user as User);
+                    if (eres.exists) {
+                        await this._userService.addUserInBand(
+                            this.props.bandId,
+                            this.state.formValues.email.value,
+                            this.state.formValues.isAdmin.value
+                        );
+                        this.props.onAdd(eres.user as User);
+                    } else {
+                        this.setState({
+                            ...this.state,
+                            errorMessage: `Aucun utilisateur n'a l'email ${this.state.formValues.email.value}`,
+                        });
+                    }
                 } else {
                     this.setState({
                         ...this.state,
-                        errorMessage: `Aucun utilisateur n'a l'email ${this.state.formValues.email.value}`,
+                        formValues: {
+                            ...this.state.formValues,
+                            email: {
+                                ...this.state.formValues.email,
+                                error: true,
+                            },
+                        },
                     });
                 }
-            } else {
-                this.setState({
-                    ...this.state,
-                    formValues: {
-                        ...this.state.formValues,
-                        email: {
-                            ...this.state.formValues.email,
-                            error: true,
-                        }
-                    }
-                });
             }
-        });
+        );
     }
 
     async handleCancel() {
@@ -118,18 +133,15 @@ export class MemberDialog extends React.Component<MemberDialogProps, MemberDialo
     }
 
     renderCb(): JSX.Element {
-        return (
-            <Checkbox onChange={this.handleAdminCheck.bind(this)} />
-        )
+        return <Checkbox onChange={this.handleAdminCheck.bind(this)} />;
     }
 
     render(): JSX.Element {
         const cb = this.renderCb();
-        return(
-            <Dialog
-                open={this.props.open}>
+        return (
+            <Dialog open={this.props.open}>
                 <form onSubmit={this.handleSubmit.bind(this)}>
-                    <Card className="dialogcard" sx={{ minWidth: 300 }} >
+                    <Card className="dialogcard" sx={{ minWidth: 300 }}>
                         <CardHeader title="Ajouter un membre" />
                         <CardContent>
                             <TextField
@@ -138,30 +150,31 @@ export class MemberDialog extends React.Component<MemberDialogProps, MemberDialo
                                 variant="outlined"
                                 value={this.state.formValues.email.value}
                                 error={this.state.formValues.email.error}
-                                helperText={this.state.formValues.email.errorMessage}
+                                helperText={
+                                    this.state.formValues.email.errorMessage
+                                }
                                 onChange={this.handleEmailChange.bind(this)}
                             />
                             <br />
-                            <FormControlLabel
-                                control={cb}
-                                label="Admin"
-                            />
+                            <FormControlLabel control={cb} label="Admin" />
                             <br />
-                            <p>
-                                {this.state.errorMessage}
-                            </p>
+                            <p>{this.state.errorMessage}</p>
                         </CardContent>
-                        <CardActions className="dialogactions" id="memberactions">
-                            <Button type="submit">
-                                Ajouter
-                            </Button>
-                            <Button type="button" onClick={this.handleCancel.bind(this)}>
+                        <CardActions
+                            className="dialogactions"
+                            id="memberactions"
+                        >
+                            <Button type="submit">Ajouter</Button>
+                            <Button
+                                type="button"
+                                onClick={this.handleCancel.bind(this)}
+                            >
                                 Annuler
                             </Button>
                         </CardActions>
-                    </Card>   
-                </form>        
+                    </Card>
+                </form>
             </Dialog>
-        )
+        );
     }
 }
